@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: contabil-backend
+    runtime: node
+    plan: free
+    region: ohio
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        value: https://contabil-six.vercel.app
+      # O MongoDB URI deve ser configurado no painel do Render por segurança
+      # mas deixarei o placeholder para o usuário saber que é necessário.
+      - key: MONGODB_URI
+        sync: false
