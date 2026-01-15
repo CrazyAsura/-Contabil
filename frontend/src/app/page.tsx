@@ -6,7 +6,8 @@ export default function Home() {
   const [message, setMessage] = useState('Carregando...');
 
   useEffect(() => {
-    fetch('http://localhost:3001')
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    fetch(apiUrl)
       .then((res) => res.text())
       .then((data) => setMessage(data))
       .catch((err) => setMessage('Erro ao conectar ao backend: ' + err.message));
