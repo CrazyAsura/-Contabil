@@ -1,10 +1,10 @@
 'use client';
 
-import { createTheme } from '@mui/material/styles';
+import { createTheme, PaletteMode } from '@mui/material/styles';
 
-const theme = createTheme({
+export const getTheme = (mode: PaletteMode) => createTheme({
   palette: {
-    mode: 'light', // ou 'dark' baseado na preferência
+    mode,
     primary: {
       main: '#000000', // Preto
     },
@@ -12,11 +12,11 @@ const theme = createTheme({
       main: '#D4AF37', // Dourado
     },
     background: {
-      default: '#FFFFFF', // Branco
-      paper: '#F5F5F5',
+      default: mode === 'light' ? '#FFFFFF' : '#0F0F0F',
+      paper: mode === 'light' ? '#F5F5F5' : '#1A1A1A',
     },
     text: {
-      primary: '#000000',
+      primary: mode === 'light' ? '#000000' : '#FFFFFF',
       secondary: '#D4AF37',
     },
   },
@@ -34,5 +34,3 @@ const theme = createTheme({
     },
   },
 });
-
-export default theme;

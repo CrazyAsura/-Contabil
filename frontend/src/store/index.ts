@@ -1,13 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-
-// Importe seus reducers aqui
-// import userReducer from './slices/userSlice';
+import uiReducer from './slices/uiSlice';
 
 const rootReducer = combineReducers({
-  // Adicione seus reducers aqui
-  // user: userReducer,
+  ui: uiReducer,
 });
 
 const persistConfig = {
