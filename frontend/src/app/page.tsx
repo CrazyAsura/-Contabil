@@ -36,12 +36,13 @@ export default function Home() {
       {/* Hero Section */}
       <Box 
         sx={{ 
-          bgcolor: 'primary.main', 
-          color: 'white', 
+          bgcolor: theme.palette.mode === 'light' ? 'background.default' : 'primary.main', 
+          color: theme.palette.mode === 'light' ? 'text.primary' : 'white', 
           pt: { xs: 10, md: 15 }, 
           pb: { xs: 10, md: 12 },
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          borderBottom: theme.palette.mode === 'light' ? `1px solid ${alpha(theme.palette.divider, 0.1)}` : 'none'
         }}
       >
         {/* Background Decoration */}
@@ -55,7 +56,7 @@ export default function Home() {
             bgcolor: 'secondary.main', 
             borderRadius: '50%', 
             filter: 'blur(120px)', 
-            opacity: 0.12 
+            opacity: theme.palette.mode === 'light' ? 0.08 : 0.12 
           }} 
         />
         <Box 
@@ -68,7 +69,7 @@ export default function Home() {
             bgcolor: 'secondary.main', 
             borderRadius: '50%', 
             filter: 'blur(100px)', 
-            opacity: 0.08 
+            opacity: theme.palette.mode === 'light' ? 0.05 : 0.08 
           }} 
         />
 
@@ -112,13 +113,14 @@ export default function Home() {
                     size="large"
                     sx={{ 
                       bgcolor: 'secondary.main', 
-                      color: 'primary.main', 
+                      color: 'white', 
                       fontWeight: 700,
                       px: 5,
                       py: 2,
                       fontSize: '1.1rem',
                       '&:hover': { bgcolor: '#B8962F', transform: 'translateY(-2px)' },
-                      transition: 'all 0.3s'
+                      transition: 'all 0.3s',
+                      boxShadow: '0 8px 25px rgba(212, 175, 55, 0.25)'
                     }}
                   >
                     Começar Agora
@@ -129,14 +131,14 @@ export default function Home() {
                     variant="outlined" 
                     size="large"
                     sx={{ 
-                      color: 'white', 
-                      borderColor: alpha('#fff', 0.5),
+                      color: theme.palette.mode === 'light' ? 'primary.main' : 'white', 
+                      borderColor: theme.palette.mode === 'light' ? alpha(theme.palette.primary.main, 0.2) : alpha('#fff', 0.5),
                       px: 5,
                       py: 2,
                       fontSize: '1.1rem',
                       '&:hover': { 
-                        borderColor: 'white', 
-                        bgcolor: alpha('#fff', 0.05),
+                        borderColor: theme.palette.mode === 'light' ? 'primary.main' : 'white', 
+                        bgcolor: theme.palette.mode === 'light' ? alpha(theme.palette.primary.main, 0.02) : alpha('#fff', 0.05),
                         transform: 'translateY(-2px)' 
                       },
                       transition: 'all 0.3s'
@@ -159,17 +161,18 @@ export default function Home() {
                 }}
               >
                 <Paper 
-                  elevation={0}
+                  elevation={theme.palette.mode === 'light' ? 4 : 0}
                   sx={{ 
                     p: 4, 
-                    bgcolor: alpha(theme.palette.common.white, 0.03),
+                    bgcolor: theme.palette.mode === 'light' ? 'background.paper' : alpha(theme.palette.common.white, 0.03),
                     backdropFilter: 'blur(20px)',
-                    border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                    border: `1px solid ${theme.palette.mode === 'light' ? alpha(theme.palette.divider, 0.1) : alpha(theme.palette.common.white, 0.1)}`,
                     borderRadius: 6,
                     width: '100%',
                     maxWidth: 450,
                     position: 'relative',
-                    zIndex: 1
+                    zIndex: 1,
+                    boxShadow: theme.palette.mode === 'light' ? '0 20px 50px rgba(0,0,0,0.08)' : '0 20px 60px rgba(0,0,0,0.05)',
                   }}
                 >
                   <Stack spacing={4}>
@@ -194,8 +197,25 @@ export default function Home() {
                           {stat.icon}
                         </Box>
                         <Box>
-                          <Typography variant="body2" sx={{ opacity: 0.6, fontWeight: 500, mb: 0.5 }}>{stat.label}</Typography>
-                          <Typography variant="h5" sx={{ fontWeight: 800 }}>{stat.value}</Typography>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              color: theme.palette.mode === 'light' ? 'text.secondary' : alpha('#fff', 0.6), 
+                              fontWeight: 600, 
+                              mb: 0.5 
+                            }}
+                          >
+                            {stat.label}
+                          </Typography>
+                          <Typography 
+                            variant="h5" 
+                            sx={{ 
+                              fontWeight: 800,
+                              color: theme.palette.mode === 'light' ? 'text.primary' : 'white'
+                            }}
+                          >
+                            {stat.value}
+                          </Typography>
                         </Box>
                       </Box>
                     ))}
@@ -227,7 +247,7 @@ export default function Home() {
       </Box>
 
       {/* Partners Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: 6, borderBottom: '1px solid #eee' }}>
+      <Box sx={{ bgcolor: 'background.paper', py: 6, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Container maxWidth="lg">
           <Typography 
             variant="overline" 
@@ -271,14 +291,14 @@ export default function Home() {
               sx={{ 
                 p: 8, 
                 height: '100%', 
-                bgcolor: 'white', 
+                bgcolor: 'background.paper', 
                 borderRadius: 6, 
-                border: '1px solid #f0f0f0',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.03)',
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                boxShadow: theme.palette.mode === 'light' ? '0 20px 60px rgba(0,0,0,0.03)' : '0 20px 60px rgba(0,0,0,0.2)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   borderColor: alpha(theme.palette.primary.main, 0.1),
-                  boxShadow: '0 30px 80px rgba(0,0,0,0.06)'
+                  boxShadow: theme.palette.mode === 'light' ? '0 30px 80px rgba(0,0,0,0.06)' : '0 30px 80px rgba(0,0,0,0.4)'
                 }
               }}
             >
@@ -390,12 +410,13 @@ export default function Home() {
                         width: 48, 
                         height: 48, 
                         borderRadius: 2, 
-                        bgcolor: 'white', 
+                        bgcolor: 'background.paper', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
                         boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
                       }}
                     >
                       {feature.icon}
@@ -417,11 +438,11 @@ export default function Home() {
                   sx={{ 
                     p: 4, 
                     borderRadius: 6, 
-                    bgcolor: 'white', 
-                    boxShadow: '0 40px 100px rgba(0,0,0,0.1)',
+                    bgcolor: 'background.paper', 
+                    boxShadow: theme.palette.mode === 'light' ? '0 40px 100px rgba(0,0,0,0.05)' : '0 40px 100px rgba(0,0,0,0.3)',
                     position: 'relative',
                     zIndex: 2,
-                    border: '1px solid #f0f0f0'
+                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
                   }}
                 >
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 6, alignItems: 'center' }}>
@@ -485,7 +506,19 @@ export default function Home() {
               { name: 'Marcos Santos', role: 'Empreendedor Solo', content: 'Finalmente um serviço que entende as dores do pequeno empresário com a agilidade do mundo digital.' }
             ].map((testi, i) => (
               <Grid key={i} size={{ xs: 12, md: 4 }}>
-                <Paper sx={{ p: 5, borderRadius: 4, bgcolor: '#fcfcfc', border: '1px solid #f0f0f0', height: '100%' }}>
+                <Paper sx={{ 
+                  p: 5, 
+                  borderRadius: 4, 
+                  bgcolor: theme.palette.mode === 'light' ? alpha(theme.palette.background.paper, 0.5) : 'background.paper', 
+                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, 
+                  height: '100%',
+                  boxShadow: 'none',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    borderColor: 'secondary.main',
+                    transform: 'translateY(-5px)'
+                  }
+                }}>
                   <Typography variant="h2" sx={{ color: 'secondary.main', opacity: 0.3, mb: -2 }}>"</Typography>
                   <Typography variant="body1" sx={{ mb: 4, fontStyle: 'italic', color: 'text.secondary', lineHeight: 1.7 }}>
                     {testi.content}

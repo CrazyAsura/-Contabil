@@ -11,17 +11,18 @@ import {
   Link as MuiLink,
   useTheme,
   alpha,
-  Divider
+  Checkbox,
+  FormControlLabel
 } from '@mui/material';
 import { 
-  Login as LoginIcon, 
+  PersonAdd as RegisterIcon, 
   Google as GoogleIcon,
   ChevronLeft as BackIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const theme = useTheme();
 
   return (
@@ -41,8 +42,8 @@ export default function LoginPage() {
       <Box 
         sx={{ 
           position: 'absolute', 
-          top: -150, 
-          left: -150, 
+          bottom: -150, 
+          right: -150, 
           width: 400, 
           height: 400, 
           bgcolor: alpha(theme.palette.secondary.main, 0.1), 
@@ -54,8 +55,8 @@ export default function LoginPage() {
       
       <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
           <Paper 
@@ -85,28 +86,42 @@ export default function LoginPage() {
                 +<span style={{ color: theme.palette.secondary.main }}>Contábil</span>
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-                Bem-vindo de volta
+                Crie sua conta
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Acesse sua conta para gerenciar suas finanças.
+                Junte-se a centenas de empresas que já simplificaram sua contabilidade.
               </Typography>
             </Box>
 
-            <Stack spacing={3}>
+            <Stack spacing={2.5}>
+              <TextField fullWidth label="Nome Completo" variant="outlined" placeholder="Seu nome" />
               <TextField fullWidth label="E-mail" variant="outlined" placeholder="seu@email.com" />
               <TextField fullWidth label="Senha" type="password" variant="outlined" />
+              <TextField fullWidth label="Confirmar Senha" type="password" variant="outlined" />
               
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <MuiLink component={Link} href="/reset-password" variant="body2" sx={{ color: 'secondary.main', fontWeight: 600, textDecoration: 'none' }}>
-                  Esqueceu a senha?
-                </MuiLink>
+              <Box sx={{ textAlign: 'left' }}>
+                <FormControlLabel
+                  control={<Checkbox color="primary" />}
+                  label={
+                    <Typography variant="body2" color="text.secondary">
+                      Eu aceito os{' '}
+                      <MuiLink component={Link} href="/terms-of-use" sx={{ color: 'secondary.main', fontWeight: 600 }}>
+                        Termos de Uso
+                      </MuiLink>
+                      {' '}e a{' '}
+                      <MuiLink component={Link} href="/privacy-policy" sx={{ color: 'secondary.main', fontWeight: 600 }}>
+                        Política de Privacidade
+                      </MuiLink>
+                    </Typography>
+                  }
+                />
               </Box>
 
               <Button 
                 fullWidth 
                 variant="contained" 
                 size="large" 
-                startIcon={<LoginIcon />}
+                startIcon={<RegisterIcon />}
                 sx={{ 
                   py: 1.8, 
                   fontWeight: 700, 
@@ -115,14 +130,8 @@ export default function LoginPage() {
                   '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.9) }
                 }}
               >
-                Entrar no Sistema
+                Cadastrar Agora
               </Button>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 1 }}>
-                <Divider sx={{ flex: 1 }} />
-                <Typography variant="body2" color="text.secondary">OU</Typography>
-                <Divider sx={{ flex: 1 }} />
-              </Box>
 
               <Button 
                 fullWidth 
@@ -138,15 +147,15 @@ export default function LoginPage() {
                   '&:hover': { borderColor: 'primary.main', bgcolor: alpha(theme.palette.primary.main, 0.02) }
                 }}
               >
-                Continuar com Google
+                Cadastrar com Google
               </Button>
             </Stack>
 
             <Box sx={{ mt: 4 }}>
               <Typography variant="body2" color="text.secondary">
-                Não tem uma conta?{' '}
-                <MuiLink component={Link} href="/register" sx={{ color: 'secondary.main', fontWeight: 700, textDecoration: 'none' }}>
-                  Cadastre-se agora
+                Já possui uma conta?{' '}
+                <MuiLink component={Link} href="/login" sx={{ color: 'secondary.main', fontWeight: 700, textDecoration: 'none' }}>
+                  Fazer Login
                 </MuiLink>
               </Typography>
             </Box>

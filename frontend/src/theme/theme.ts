@@ -17,7 +17,7 @@ export const getTheme = (mode: PaletteMode) => createTheme({
     },
     text: {
       primary: mode === 'light' ? '#000000' : '#FFFFFF',
-      secondary: '#D4AF37',
+      secondary: mode === 'light' ? '#666666' : '#999999',
     },
   },
   typography: {

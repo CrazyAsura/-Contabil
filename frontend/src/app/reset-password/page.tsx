@@ -10,18 +10,17 @@ import {
   Stack,
   Link as MuiLink,
   useTheme,
-  alpha,
-  Divider
+  alpha
 } from '@mui/material';
 import { 
-  Login as LoginIcon, 
-  Google as GoogleIcon,
-  ChevronLeft as BackIcon
+  LockReset as ResetIcon, 
+  ChevronLeft as BackIcon,
+  Email as EmailIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const theme = useTheme();
 
   return (
@@ -41,13 +40,14 @@ export default function LoginPage() {
       <Box 
         sx={{ 
           position: 'absolute', 
-          top: -150, 
-          left: -150, 
-          width: 400, 
-          height: 400, 
-          bgcolor: alpha(theme.palette.secondary.main, 0.1), 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)',
+          width: 600, 
+          height: 600, 
+          bgcolor: alpha(theme.palette.primary.main, 0.05), 
           borderRadius: '50%', 
-          filter: 'blur(100px)',
+          filter: 'blur(120px)',
           zIndex: 0
         }} 
       />
@@ -85,28 +85,29 @@ export default function LoginPage() {
                 +<span style={{ color: theme.palette.secondary.main }}>Contábil</span>
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-                Bem-vindo de volta
+                Recuperar Senha
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Acesse sua conta para gerenciar suas finanças.
+                Insira seu e-mail e enviaremos um link para você redefinir sua senha.
               </Typography>
             </Box>
 
             <Stack spacing={3}>
-              <TextField fullWidth label="E-mail" variant="outlined" placeholder="seu@email.com" />
-              <TextField fullWidth label="Senha" type="password" variant="outlined" />
+              <TextField 
+                fullWidth 
+                label="E-mail" 
+                variant="outlined" 
+                placeholder="seu@email.com"
+                InputProps={{
+                  startAdornment: <EmailIcon sx={{ color: 'text.disabled', mr: 1 }} />,
+                }}
+              />
               
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <MuiLink component={Link} href="/reset-password" variant="body2" sx={{ color: 'secondary.main', fontWeight: 600, textDecoration: 'none' }}>
-                  Esqueceu a senha?
-                </MuiLink>
-              </Box>
-
               <Button 
                 fullWidth 
                 variant="contained" 
                 size="large" 
-                startIcon={<LoginIcon />}
+                startIcon={<ResetIcon />}
                 sx={{ 
                   py: 1.8, 
                   fontWeight: 700, 
@@ -115,38 +116,15 @@ export default function LoginPage() {
                   '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.9) }
                 }}
               >
-                Entrar no Sistema
-              </Button>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 1 }}>
-                <Divider sx={{ flex: 1 }} />
-                <Typography variant="body2" color="text.secondary">OU</Typography>
-                <Divider sx={{ flex: 1 }} />
-              </Box>
-
-              <Button 
-                fullWidth 
-                variant="outlined" 
-                size="large" 
-                startIcon={<GoogleIcon />}
-                sx={{ 
-                  py: 1.5, 
-                  fontWeight: 600, 
-                  color: 'text.primary',
-                  borderColor: alpha(theme.palette.divider, 0.2),
-                  borderRadius: 2,
-                  '&:hover': { borderColor: 'primary.main', bgcolor: alpha(theme.palette.primary.main, 0.02) }
-                }}
-              >
-                Continuar com Google
+                Enviar Link de Recuperação
               </Button>
             </Stack>
 
             <Box sx={{ mt: 4 }}>
               <Typography variant="body2" color="text.secondary">
-                Não tem uma conta?{' '}
-                <MuiLink component={Link} href="/register" sx={{ color: 'secondary.main', fontWeight: 700, textDecoration: 'none' }}>
-                  Cadastre-se agora
+                Lembrou sua senha?{' '}
+                <MuiLink component={Link} href="/login" sx={{ color: 'secondary.main', fontWeight: 700, textDecoration: 'none' }}>
+                  Voltar para o Login
                 </MuiLink>
               </Typography>
             </Box>
