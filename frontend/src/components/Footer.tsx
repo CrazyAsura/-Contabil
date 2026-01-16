@@ -1,7 +1,8 @@
 'use client';
 
-import { Box, Container, Grid, Typography, Link as MuiLink } from '@mui/material';
+import { Box, Container, Grid, Typography, Link as MuiLink, IconButton, Stack } from '@mui/material';
 import Link from 'next/link';
+import { Instagram as InstagramIcon, LinkedIn as LinkedInIcon, Email as EmailIcon } from '@mui/icons-material';
 
 const footerItems = [
   { name: 'Inicio', path: '/' },
@@ -10,6 +11,8 @@ const footerItems = [
   { name: 'Quem Somos', path: '/about' },
   { name: 'FAQ', path: '/faq' },
   { name: 'Contato', path: '/contact' },
+  { name: 'Política de Privacidade', path: '/privacy-policy' },
+  { name: 'Termos de Uso', path: '/terms-of-use' },
   { name: 'Login', path: '/login' },
 ];
 
@@ -22,9 +25,34 @@ export function Footer() {
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
               +<span style={{ color: '#D4AF37' }}>Contábil</span>
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 3 }}>
               Sua contabilidade inteligente, simplificada e segura.
             </Typography>
+            <Stack direction="row" spacing={1}>
+              <IconButton 
+                component="a" 
+                href="https://instagram.com" 
+                target="_blank" 
+                sx={{ color: 'rgba(255, 255, 255, 0.7)', '&:hover': { color: 'secondary.main' } }}
+              >
+                <InstagramIcon />
+              </IconButton>
+              <IconButton 
+                component="a" 
+                href="https://linkedin.com" 
+                target="_blank" 
+                sx={{ color: 'rgba(255, 255, 255, 0.7)', '&:hover': { color: 'secondary.main' } }}
+              >
+                <LinkedInIcon />
+              </IconButton>
+              <IconButton 
+                component="a" 
+                href="mailto:contato@maiscontabil.com.br" 
+                sx={{ color: 'rgba(255, 255, 255, 0.7)', '&:hover': { color: 'secondary.main' } }}
+              >
+                <EmailIcon />
+              </IconButton>
+            </Stack>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
