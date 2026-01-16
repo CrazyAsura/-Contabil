@@ -15,7 +15,8 @@ import {
 import { 
   LockReset as ResetIcon, 
   ChevronLeft as BackIcon,
-  Email as EmailIcon
+  Email as EmailIcon,
+  LockOutlined as LockIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -88,7 +89,7 @@ export default function ResetPasswordPage() {
                 Recuperar Senha
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Insira seu e-mail e enviaremos um link para você redefinir sua senha.
+                Insira seu e-mail e sua nova senha abaixo para redefinir o acesso.
               </Typography>
             </Box>
 
@@ -100,6 +101,28 @@ export default function ResetPasswordPage() {
                 placeholder="seu@email.com"
                 InputProps={{
                   startAdornment: <EmailIcon sx={{ color: 'text.disabled', mr: 1 }} />,
+                }}
+              />
+
+              <TextField 
+                fullWidth 
+                label="Nova Senha" 
+                type="password"
+                variant="outlined" 
+                placeholder="••••••••"
+                InputProps={{
+                  startAdornment: <LockIcon sx={{ color: 'text.disabled', mr: 1 }} />,
+                }}
+              />
+
+              <TextField 
+                fullWidth 
+                label="Confirmar Nova Senha" 
+                type="password"
+                variant="outlined" 
+                placeholder="••••••••"
+                InputProps={{
+                  startAdornment: <LockIcon sx={{ color: 'text.disabled', mr: 1 }} />,
                 }}
               />
               
@@ -116,7 +139,7 @@ export default function ResetPasswordPage() {
                   '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.9) }
                 }}
               >
-                Enviar Link de Recuperação
+                Redefinir Senha
               </Button>
             </Stack>
 
