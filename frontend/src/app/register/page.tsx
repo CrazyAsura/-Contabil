@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Box, 
   Container, 
@@ -30,8 +30,6 @@ import {
   CheckCircleOutline as SuccessIcon,
   Business as BusinessIcon,
   Person as PersonIcon,
-  LocationOn as AddressIcon,
-  Phone as ContactIcon,
   Visibility,
   VisibilityOff
 } from '@mui/icons-material';
@@ -40,7 +38,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IMaskInput } from 'react-imask';
 import axios from 'axios';
 
-// --- Mask Components ---
+// --- Mask Components (Keep outside to avoid recreation) ---
 
 const CPFMask = React.forwardRef<HTMLInputElement, any>((props, ref) => (
   <IMaskInput
@@ -113,6 +111,224 @@ interface CityIBGE {
   nome: string;
 }
 
+// --- Step Components (Defined outside to prevent re-render focus loss) ---
+
+const Step1 = React.memo(({ personType, setPersonType, formData, handleChange, showPassword, setShowPassword }: any) => (
+  <Stack spacing={3}>
+    <RadioGroup 
+      row 
+      value={personType} 
+      onChange={(e) => setPersonType(e.target.value)}
+      sx={{ justifyContent: 'center', mb: 1 }}
+    >
+      <FormControlLabel 
+        value="PF" 
+        control={<Radio color="secondary" />} 
+        label={<Stack direction="row" alignItems="center" gap={1}><PersonIcon fontSize="small" /> Pessoa Física</Stack>} 
+      />
+      <FormControlLabel 
+        value="PJ" 
+        control={<Radio color="secondary" />} 
+        label={<Stack direction="row" alignItems="center" gap={1}><BusinessIcon fontSize="small" /> Pessoa Jurídica</Stack>} 
+      />
+    </RadioGroup>
+
+    <TextField
+      fullWidth
+      label={personType === 'PF' ? "Nome Completo" : "Razão Social"}
+      name="name"
+      value={formData.name}
+      onChange={handleChange}
+      variant="outlined"
+    />
+
+    <TextField
+      fullWidth
+      label={personType === 'PF' ? "CPF" : "CNPJ"}
+      name="document"
+      value={formData.document}
+      onChange={handleChange}
+      InputProps={{
+        inputComponent: personType === 'PF' ? CPFMask as any : CNPJMask as any,
+      }}
+    />
+
+    <TextField
+      fullWidth
+      label="E-mail"
+      name="email"
+      type="email"
+      value={formData.email}
+      onChange={handleChange}
+    />
+
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      <TextField
+        fullWidth
+        label="Senha"
+        name="password"
+        type={showPassword ? 'text' : 'password'}
+        value={formData.password}
+        onChange={handleChange}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        fullWidth
+        label="Confirmar Senha"
+        name="confirmPassword"
+        type={showPassword ? 'text' : 'password'}
+        value={formData.confirmPassword}
+        onChange={handleChange}
+      />
+    </Stack>
+  </Stack>
+));
+Step1.displayName = 'Step1';
+
+const Step2 = React.memo(({ formData, setFormData, handleCEPChange, states, cities, loadingStates, loadingCities, loadingCEP, fetchCities, handleChange }: any) => (
+  <Stack spacing={3}>
+    <Stack direction="row" spacing={2}>
+      <TextField
+        fullWidth
+        label="CEP"
+        name="cep"
+        value={formData.cep}
+        onChange={handleCEPChange}
+        InputProps={{
+          inputComponent: CEPMask as any,
+          endAdornment: loadingCEP ? <CircularProgress size={20} /> : null
+        }}
+      />
+      <TextField
+        sx={{ width: '120px' }}
+        label="Número"
+        name="number"
+        value={formData.number}
+        onChange={handleChange}
+      />
+    </Stack>
+
+    <Autocomplete
+      freeSolo
+      options={[]}
+      value={formData.street}
+      onInputChange={(_, newValue) => setFormData((prev: any) => ({ ...prev, street: newValue }))}
+      renderInput={(params) => <TextField {...params} label="Logradouro/Rua" />}
+    />
+
+    <Autocomplete
+      freeSolo
+      options={[]}
+      value={formData.neighborhood}
+      onInputChange={(_, newValue) => setFormData((prev: any) => ({ ...prev, neighborhood: newValue }))}
+      renderInput={(params) => <TextField {...params} label="Bairro" />}
+    />
+
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      <Autocomplete
+        fullWidth
+        options={states}
+        getOptionLabel={(option) => typeof option === 'string' ? option : `${option.nome} (${option.sigla})`}
+        value={states.find((s: any) => s.sigla === formData.state) || null}
+        onChange={(_, newValue) => {
+          const uf = typeof newValue === 'string' ? newValue : newValue?.sigla || '';
+          setFormData((prev: any) => ({ ...prev, state: uf, city: '' }));
+          if (uf) fetchCities(uf);
+        }}
+        loading={loadingStates}
+        renderInput={(params) => (
+          <TextField {...params} label="Estado" InputProps={{ ...params.InputProps, endAdornment: <>{loadingStates ? <CircularProgress size={20} /> : null}{params.InputProps.endAdornment}</> }} />
+        )}
+      />
+
+      <Autocomplete
+        fullWidth
+        options={cities}
+        getOptionLabel={(option) => typeof option === 'string' ? option : option.nome}
+        value={cities.find((c: any) => c.nome === formData.city) || null}
+        onChange={(_, newValue) => {
+          const cityName = typeof newValue === 'string' ? newValue : newValue?.nome || '';
+          setFormData((prev: any) => ({ ...prev, city: cityName }));
+        }}
+        loading={loadingCities}
+        disabled={!formData.state}
+        renderInput={(params) => (
+          <TextField {...params} label="Cidade" InputProps={{ ...params.InputProps, endAdornment: <>{loadingCities ? <CircularProgress size={20} /> : null}{params.InputProps.endAdornment}</> }} />
+        )}
+      />
+    </Stack>
+
+    <Autocomplete
+      fullWidth
+      options={['Brasil', 'Portugal', 'EUA', 'Outros']}
+      value={formData.country}
+      onChange={(_, newValue) => setFormData((prev: any) => ({ ...prev, country: newValue || 'Brasil' }))}
+      renderInput={(params) => <TextField {...params} label="País" />}
+    />
+  </Stack>
+));
+Step2.displayName = 'Step2';
+
+const Step3 = React.memo(({ formData, handleChange, personType }: any) => {
+  const theme = useTheme();
+  return (
+    <Stack spacing={3}>
+      <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 1 }}>
+        Insira suas informações de contato para que nossa equipe possa falar com você.
+      </Typography>
+
+      <Stack direction="row" spacing={2}>
+        <TextField
+          label="DDI"
+          name="ddi"
+          value={formData.ddi}
+          onChange={handleChange}
+          sx={{ width: '100px' }}
+          InputProps={{ inputComponent: DDIMask as any }}
+        />
+        <TextField
+          label="DDD"
+          name="ddd"
+          value={formData.ddd}
+          onChange={handleChange}
+          sx={{ width: '100px' }}
+          placeholder="11"
+        />
+        <TextField
+          fullWidth
+          label="Número do Telefone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          InputProps={{ inputComponent: PhoneMask as any }}
+        />
+      </Stack>
+
+      <Box sx={{ p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.05), borderRadius: 4, border: `1px dashed ${theme.palette.secondary.main}` }}>
+        <Typography variant="subtitle2" color="secondary.main" fontWeight={700} gutterBottom>
+          Resumo do Cadastro:
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Tipo:</strong> {personType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}<br />
+          <strong>Nome:</strong> {formData.name || '---'}<br />
+          <strong>Local:</strong> {formData.city ? `${formData.city} - ${formData.state}` : '---'}
+        </Typography>
+      </Box>
+    </Stack>
+  );
+});
+Step3.displayName = 'Step3';
+
+// --- Main Page Component ---
+
 export default function RegisterPage() {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
@@ -125,7 +341,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    document: '', // CPF or CNPJ
+    document: '',
     cep: '',
     street: '',
     number: '',
@@ -175,9 +391,10 @@ export default function RegisterPage() {
     }
   }, []);
 
-  const handleCEPChange = async (e: any) => {
-    const cep = e.target.value.replace(/\D/g, '');
-    setFormData(prev => ({ ...prev, cep: e.target.value }));
+  const handleCEPChange = useCallback(async (e: any) => {
+    const value = e.target.value;
+    const cep = value.replace(/\D/g, '');
+    setFormData(prev => ({ ...prev, cep: value }));
     
     if (cep.length === 8) {
       setLoadingCEP(true);
@@ -200,230 +417,52 @@ export default function RegisterPage() {
         setLoadingCEP(false);
       }
     }
-  };
+  }, [fetchCities]);
 
   // --- Handlers ---
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
-  const handleBack = () => setActiveStep((prev) => prev - 1);
+  const handleNext = useCallback(() => setActiveStep((prev) => prev + 1), []);
+  const handleBack = useCallback(() => setActiveStep((prev) => prev - 1), []);
 
-  const handleChange = (e: any) => {
+  const handleChange = useCallback((e: any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  // --- Form Steps Components ---
-
-  const Step1 = () => (
-    <Stack spacing={3}>
-      <RadioGroup 
-        row 
-        value={personType} 
-        onChange={(e) => {
-          setPersonType(e.target.value);
-          setFormData(prev => ({ ...prev, document: '' }));
-        }}
-        sx={{ justifyContent: 'center', mb: 1 }}
-      >
-        <FormControlLabel 
-          value="PF" 
-          control={<Radio color="secondary" />} 
-          label={<Stack direction="row" alignItems="center" gap={1}><PersonIcon fontSize="small" /> Pessoa Física</Stack>} 
-        />
-        <FormControlLabel 
-          value="PJ" 
-          control={<Radio color="secondary" />} 
-          label={<Stack direction="row" alignItems="center" gap={1}><BusinessIcon fontSize="small" /> Pessoa Jurídica</Stack>} 
-        />
-      </RadioGroup>
-
-      <TextField
-        fullWidth
-        label={personType === 'PF' ? "Nome Completo" : "Razão Social"}
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        variant="outlined"
-      />
-
-      <TextField
-        fullWidth
-        label={personType === 'PF' ? "CPF" : "CNPJ"}
-        name="document"
-        value={formData.document}
-        onChange={handleChange}
-        InputProps={{
-          inputComponent: personType === 'PF' ? CPFMask as any : CNPJMask as any,
-        }}
-      />
-
-      <TextField
-        fullWidth
-        label="E-mail"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-      />
-
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <TextField
-          fullWidth
-          label="Senha"
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          value={formData.password}
-          onChange={handleChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          fullWidth
-          label="Confirmar Senha"
-          name="confirmPassword"
-          type={showPassword ? 'text' : 'password'}
-          value={formData.confirmPassword}
-          onChange={handleChange}
-        />
-      </Stack>
-    </Stack>
-  );
-
-  const Step2 = () => (
-    <Stack spacing={3}>
-      <Stack direction="row" spacing={2}>
-        <TextField
-          fullWidth
-          label="CEP"
-          name="cep"
-          value={formData.cep}
-          onChange={handleCEPChange}
-          InputProps={{
-            inputComponent: CEPMask as any,
-            endAdornment: loadingCEP ? <CircularProgress size={20} /> : null
-          }}
-        />
-        <TextField
-          sx={{ width: '120px' }}
-          label="Número"
-          name="number"
-          value={formData.number}
-          onChange={handleChange}
-        />
-      </Stack>
-
-      <Autocomplete
-        freeSolo
-        options={[]} // Streets are usually too many for a select, but we use freeSolo
-        value={formData.street}
-        onInputChange={(_, newValue) => setFormData(prev => ({ ...prev, street: newValue }))}
-        renderInput={(params) => <TextField {...params} label="Logradouro/Rua" />}
-      />
-
-      <Autocomplete
-        freeSolo
-        options={[]}
-        value={formData.neighborhood}
-        onInputChange={(_, newValue) => setFormData(prev => ({ ...prev, neighborhood: newValue }))}
-        renderInput={(params) => <TextField {...params} label="Bairro" />}
-      />
-
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Autocomplete
-          fullWidth
-          options={states}
-          getOptionLabel={(option) => typeof option === 'string' ? option : `${option.nome} (${option.sigla})`}
-          value={states.find(s => s.sigla === formData.state) || null}
-          onChange={(_, newValue) => {
-            const uf = typeof newValue === 'string' ? newValue : newValue?.sigla || '';
-            setFormData(prev => ({ ...prev, state: uf, city: '' }));
-            if (uf) fetchCities(uf);
-          }}
-          loading={loadingStates}
-          renderInput={(params) => (
-            <TextField {...params} label="Estado" InputProps={{ ...params.InputProps, endAdornment: <>{loadingStates ? <CircularProgress size={20} /> : null}{params.InputProps.endAdornment}</> }} />
-          )}
-        />
-
-        <Autocomplete
-          fullWidth
-          options={cities}
-          getOptionLabel={(option) => typeof option === 'string' ? option : option.nome}
-          value={cities.find(c => c.nome === formData.city) || null}
-          onChange={(_, newValue) => {
-            const cityName = typeof newValue === 'string' ? newValue : newValue?.nome || '';
-            setFormData(prev => ({ ...prev, city: cityName }));
-          }}
-          loading={loadingCities}
-          disabled={!formData.state}
-          renderInput={(params) => (
-            <TextField {...params} label="Cidade" InputProps={{ ...params.InputProps, endAdornment: <>{loadingCities ? <CircularProgress size={20} /> : null}{params.InputProps.endAdornment}</> }} />
-          )}
-        />
-      </Stack>
-
-      <Autocomplete
-        fullWidth
-        options={['Brasil', 'Portugal', 'EUA', 'Outros']}
-        value={formData.country}
-        onChange={(_, newValue) => setFormData(prev => ({ ...prev, country: newValue || 'Brasil' }))}
-        renderInput={(params) => <TextField {...params} label="País" />}
-      />
-    </Stack>
-  );
-
-  const Step3 = () => (
-    <Stack spacing={3}>
-      <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 1 }}>
-        Insira suas informações de contato para que nossa equipe possa falar com você.
-      </Typography>
-
-      <Stack direction="row" spacing={2}>
-        <TextField
-          label="DDI"
-          name="ddi"
-          value={formData.ddi}
-          onChange={handleChange}
-          sx={{ width: '100px' }}
-          InputProps={{ inputComponent: DDIMask as any }}
-        />
-        <TextField
-          label="DDD"
-          name="ddd"
-          value={formData.ddd}
-          onChange={handleChange}
-          sx={{ width: '100px' }}
-          placeholder="11"
-        />
-        <TextField
-          fullWidth
-          label="Número do Telefone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          InputProps={{ inputComponent: PhoneMask as any }}
-        />
-      </Stack>
-
-      <Box sx={{ p: 3, bgcolor: alpha(theme.palette.secondary.main, 0.05), borderRadius: 4, border: `1px dashed ${theme.palette.secondary.main}` }}>
-        <Typography variant="subtitle2" color="secondary.main" fontWeight={700} gutterBottom>
-          Resumo do Cadastro:
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Tipo:</strong> {personType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}<br />
-          <strong>Nome:</strong> {formData.name || '---'}<br />
-          <strong>Local:</strong> {formData.city ? `${formData.city} - ${formData.state}` : '---'}
-        </Typography>
-      </Box>
-    </Stack>
-  );
+  const currentStepContent = useMemo(() => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <Step1 
+            personType={personType} 
+            setPersonType={setPersonType} 
+            formData={formData} 
+            handleChange={handleChange}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+          />
+        );
+      case 1:
+        return (
+          <Step2 
+            formData={formData} 
+            setFormData={setFormData}
+            handleCEPChange={handleCEPChange}
+            states={states}
+            cities={cities}
+            loadingStates={loadingStates}
+            loadingCities={loadingCities}
+            loadingCEP={loadingCEP}
+            fetchCities={fetchCities}
+            handleChange={handleChange}
+          />
+        );
+      case 2:
+        return <Step3 formData={formData} handleChange={handleChange} personType={personType} />;
+      default:
+        return null;
+    }
+  }, [activeStep, personType, formData, handleChange, showPassword, handleCEPChange, states, cities, loadingStates, loadingCities, loadingCEP, fetchCities]);
 
   return (
     <Box 
@@ -488,9 +527,7 @@ export default function RegisterPage() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {activeStep === 0 && <Step1 />}
-                {activeStep === 1 && <Step2 />}
-                {activeStep === 2 && <Step3 />}
+                {currentStepContent}
               </motion.div>
             </AnimatePresence>
 
