@@ -19,7 +19,10 @@ import {
   Business as BusinessIcon, 
   Person as PersonIcon,
   Security as SecurityIcon,
-  AutoGraph as AutomationIcon
+  AutoGraph as AutomationIcon,
+  Description as DocIcon,
+  Handshake as PartnerIcon,
+  Speed as SpeedIcon
 } from '@mui/icons-material';
 
 const MotionBox = motion(Box);
@@ -35,8 +38,8 @@ export default function Home() {
         sx={{ 
           bgcolor: 'primary.main', 
           color: 'white', 
-          pt: { xs: 10, md: 20 }, 
-          pb: { xs: 10, md: 15 },
+          pt: { xs: 10, md: 15 }, 
+          pb: { xs: 10, md: 12 },
           position: 'relative',
           overflow: 'hidden'
         }}
@@ -47,17 +50,30 @@ export default function Home() {
             position: 'absolute', 
             top: -100, 
             right: -100, 
-            width: 400, 
-            height: 400, 
+            width: 500, 
+            height: 500, 
+            bgcolor: 'secondary.main', 
+            borderRadius: '50%', 
+            filter: 'blur(120px)', 
+            opacity: 0.12 
+          }} 
+        />
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            bottom: -50, 
+            left: -50, 
+            width: 300, 
+            height: 300, 
             bgcolor: 'secondary.main', 
             borderRadius: '50%', 
             filter: 'blur(100px)', 
-            opacity: 0.15 
+            opacity: 0.08 
           }} 
         />
 
         <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
+          <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <MotionBox
                 initial={{ opacity: 0, x: -50 }}
@@ -67,21 +83,28 @@ export default function Home() {
                 <Typography 
                   variant="h1" 
                   sx={{ 
-                    fontSize: { xs: '2.5rem', md: '4rem' }, 
+                    fontSize: { xs: '2.8rem', md: '4.5rem' }, 
                     fontWeight: 800, 
-                    lineHeight: 1.2,
-                    mb: 2 
+                    lineHeight: 1.1,
+                    mb: 3,
+                    letterSpacing: '-0.02em'
                   }}
                 >
-                  Inteligência Financeira para <span style={{ color: theme.palette.secondary.main }}>Empresas</span> e <span style={{ color: theme.palette.secondary.main }}>Pessoas</span>
+                  A Contabilidade que <span style={{ color: theme.palette.secondary.main }}>Impulsiona</span> seu Futuro
                 </Typography>
                 <Typography 
                   variant="h5" 
-                  sx={{ mb: 4, opacity: 0.9, fontWeight: 400, maxWidth: '90%' }}
+                  sx={{ 
+                    mb: 5, 
+                    opacity: 0.85, 
+                    fontWeight: 400, 
+                    maxWidth: '600px',
+                    lineHeight: 1.6
+                  }}
                 >
-                  O SaaS B2B que une contabilidade de alta performance e estratégias de economia real. Simplifique sua gestão e maximize seus lucros.
+                  Unimos tecnologia de ponta e expertise humana para transformar a gestão financeira da sua empresa e da sua vida pessoal.
                 </Typography>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5}>
                   <Button 
                     component={Link} 
                     href="/plans" 
@@ -91,9 +114,11 @@ export default function Home() {
                       bgcolor: 'secondary.main', 
                       color: 'primary.main', 
                       fontWeight: 700,
-                      px: 4,
-                      py: 1.5,
-                      '&:hover': { bgcolor: '#B8962F' }
+                      px: 5,
+                      py: 2,
+                      fontSize: '1.1rem',
+                      '&:hover': { bgcolor: '#B8962F', transform: 'translateY(-2px)' },
+                      transition: 'all 0.3s'
                     }}
                   >
                     Começar Agora
@@ -105,21 +130,27 @@ export default function Home() {
                     size="large"
                     sx={{ 
                       color: 'white', 
-                      borderColor: 'white',
-                      px: 4,
-                      py: 1.5,
-                      '&:hover': { borderColor: 'secondary.main', color: 'secondary.main' }
+                      borderColor: alpha('#fff', 0.5),
+                      px: 5,
+                      py: 2,
+                      fontSize: '1.1rem',
+                      '&:hover': { 
+                        borderColor: 'white', 
+                        bgcolor: alpha('#fff', 0.05),
+                        transform: 'translateY(-2px)' 
+                      },
+                      transition: 'all 0.3s'
                     }}
                   >
-                    Conhecer Soluções
+                    Nossa Metodologia
                   </Button>
                 </Stack>
               </MotionBox>
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
               <MotionBox
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 sx={{ 
                   display: 'flex', 
@@ -128,37 +159,96 @@ export default function Home() {
                 }}
               >
                 <Paper 
-                  elevation={24}
+                  elevation={0}
                   sx={{ 
-                    p: 2, 
-                    bgcolor: alpha(theme.palette.common.white, 0.05),
-                    backdropFilter: 'blur(10px)',
-                    border: `1px solid ${alpha(theme.palette.secondary.main, 0.3)}`,
-                    borderRadius: 4,
+                    p: 4, 
+                    bgcolor: alpha(theme.palette.common.white, 0.03),
+                    backdropFilter: 'blur(20px)',
+                    border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                    borderRadius: 6,
                     width: '100%',
-                    maxWidth: 450
+                    maxWidth: 450,
+                    position: 'relative',
+                    zIndex: 1
                   }}
                 >
-                  <Box sx={{ p: 3 }}>
-                    <Stack spacing={3}>
-                      {[
-                        { label: 'Economia Mensal', value: 'R$ 12.450', color: theme.palette.secondary.main, icon: <GrowthIcon /> },
-                        { label: 'Impostos Recuperados', value: 'R$ 8.200', color: '#4caf50', icon: <BankIcon /> },
-                        { label: 'Saúde Financeira', value: 'Excelente', color: '#2196f3', icon: <SecurityIcon /> }
-                      ].map((stat, index) => (
-                        <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Box sx={{ color: stat.color }}>{stat.icon}</Box>
-                          <Box>
-                            <Typography variant="caption" sx={{ opacity: 0.7 }}>{stat.label}</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{stat.value}</Typography>
-                          </Box>
+                  <Stack spacing={4}>
+                    {[
+                      { label: 'Economia em Impostos', value: '+32%', color: theme.palette.secondary.main, icon: <GrowthIcon sx={{ fontSize: 28 }} /> },
+                      { label: 'Tempo de Resposta', value: '< 2 horas', color: '#4caf50', icon: <SpeedIcon sx={{ fontSize: 28 }} /> },
+                      { label: 'Satisfação dos Clientes', value: '99.8%', color: '#2196f3', icon: <PartnerIcon sx={{ fontSize: 28 }} /> }
+                    ].map((stat, index) => (
+                      <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <Box 
+                          sx={{ 
+                            width: 56, 
+                            height: 56, 
+                            borderRadius: 3, 
+                            bgcolor: alpha(stat.color, 0.15),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: stat.color
+                          }}
+                        >
+                          {stat.icon}
                         </Box>
-                      ))}
-                    </Stack>
-                  </Box>
+                        <Box>
+                          <Typography variant="body2" sx={{ opacity: 0.6, fontWeight: 500, mb: 0.5 }}>{stat.label}</Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 800 }}>{stat.value}</Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
                 </Paper>
+                {/* Floating element */}
+                <MotionBox
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  sx={{
+                    position: 'absolute',
+                    top: -20,
+                    right: -20,
+                    bgcolor: 'secondary.main',
+                    color: 'primary.main',
+                    p: 2,
+                    borderRadius: 3,
+                    boxShadow: '0 10px 30px rgba(212, 175, 55, 0.3)',
+                    zIndex: 2,
+                    fontWeight: 800
+                  }}
+                >
+                  Top 1% BPO 2024
+                </MotionBox>
               </MotionBox>
             </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Partners Section */}
+      <Box sx={{ bgcolor: 'background.paper', py: 6, borderBottom: '1px solid #eee' }}>
+        <Container maxWidth="lg">
+          <Typography 
+            variant="overline" 
+            sx={{ 
+              display: 'block', 
+              textAlign: 'center', 
+              mb: 4, 
+              color: 'text.secondary',
+              fontWeight: 700,
+              letterSpacing: 2
+            }}
+          >
+            CONFIADO POR MAIS DE 500 EMPRESAS EM TODO O BRASIL
+          </Typography>
+          <Grid container spacing={4} justifyContent="center" alignItems="center" sx={{ opacity: 0.5 }}>
+             {/* Mock logos */}
+             {['FINTECH', 'HEALTHCARE', 'RETAIL', 'LOGISTICS', 'E-COMMERCE'].map((name) => (
+               <Grid key={name} size={{ xs: 6, md: 2 }}>
+                 <Typography variant="h6" sx={{ textAlign: 'center', fontWeight: 900 }}>{name}</Typography>
+               </Grid>
+             ))}
           </Grid>
         </Container>
       </Box>
@@ -166,80 +256,153 @@ export default function Home() {
       {/* Benefits Section */}
       <Container maxWidth="lg" sx={{ py: 15 }}>
         <Box sx={{ textAlign: 'center', mb: 10 }}>
-          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }}>
-            Soluções Dual-Core
+          <Typography variant="h2" sx={{ fontWeight: 800, mb: 3, letterSpacing: '-0.02em' }}>
+            Soluções Sob Medida
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto' }}>
-            Atendemos as complexidades do mundo corporativo e a agilidade necessária para as finanças pessoais.
+          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', fontWeight: 400 }}>
+            Entendemos que cada jornada é única. Por isso, separamos nossas especialidades para atender exatamente o que você precisa agora.
           </Typography>
         </Box>
 
         <Grid container spacing={4}>
           <Grid size={{ xs: 12, md: 6 }}>
             <MotionBox
-              whileHover={{ y: -10 }}
+              whileHover={{ y: -12 }}
               sx={{ 
-                p: 6, 
+                p: 8, 
                 height: '100%', 
                 bgcolor: 'white', 
-                borderRadius: 4, 
-                border: '1px solid #eee',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.05)'
+                borderRadius: 6, 
+                border: '1px solid #f0f0f0',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.03)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: alpha(theme.palette.primary.main, 0.1),
+                  boxShadow: '0 30px 80px rgba(0,0,0,0.06)'
+                }
               }}
             >
-              <BusinessIcon sx={{ fontSize: 48, color: 'primary.main', mb: 3 }} />
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>Para Empresas</Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                BPO financeiro, planejamento tributário avançado e contabilidade consultiva para escalar seu negócio com segurança jurídica e economia de impostos.
+              <Box 
+                sx={{ 
+                  width: 80, 
+                  height: 80, 
+                  bgcolor: alpha(theme.palette.primary.main, 0.05),
+                  borderRadius: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 4
+                }}
+              >
+                <BusinessIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 3 }}>Para Empresas</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: '1.1rem', lineHeight: 1.7 }}>
+                Do BPO financeiro à contabilidade consultiva. Automatizamos sua rotina para que você foque no crescimento, enquanto nós cuidamos da saúde fiscal e jurídica.
               </Typography>
-              <Button color="primary" sx={{ fontWeight: 700 }}>Saiba mais →</Button>
+              <Button 
+                component={Link}
+                href="/services"
+                endIcon={<span>→</span>}
+                sx={{ 
+                  fontWeight: 800, 
+                  fontSize: '1rem',
+                  p: 0,
+                  color: 'primary.main',
+                  '&:hover': { bgcolor: 'transparent', gap: 1 }
+                }}
+              >
+                Explorar Soluções Corporativas
+              </Button>
             </MotionBox>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <MotionBox
-              whileHover={{ y: -10 }}
+              whileHover={{ y: -12 }}
               sx={{ 
-                p: 6, 
+                p: 8, 
                 height: '100%', 
                 bgcolor: 'primary.main', 
                 color: 'white', 
-                borderRadius: 4, 
-                boxShadow: '0 10px 40px rgba(0,0,0,0.2)'
+                borderRadius: 6, 
+                boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
+                position: 'relative',
+                overflow: 'hidden'
               }}
             >
-              <PersonIcon sx={{ fontSize: 48, color: 'secondary.main', mb: 3 }} />
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>Para Você</Typography>
-              <Typography variant="body1" sx={{ mb: 4, opacity: 0.8 }}>
-                Gestão de patrimônio, declaração de IR inteligente e estratégias de economia doméstica para que seu dinheiro trabalhe para você, não o contrário.
+              <Box 
+                sx={{ 
+                  width: 80, 
+                  height: 80, 
+                  bgcolor: alpha(theme.palette.secondary.main, 0.2),
+                  borderRadius: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 4
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 40, color: 'secondary.main' }} />
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 3 }}>Para Você</Typography>
+              <Typography variant="body1" sx={{ mb: 5, opacity: 0.8, fontSize: '1.1rem', lineHeight: 1.7 }}>
+                Planejamento sucessório, gestão de investimentos e declaração de IR. Transformamos obrigações em estratégias de acúmulo de patrimônio.
               </Typography>
-              <Button sx={{ color: 'secondary.main', fontWeight: 700 }}>Saiba mais →</Button>
+              <Button 
+                component={Link}
+                href="/services"
+                sx={{ 
+                  color: 'secondary.main', 
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  p: 0,
+                  '&:hover': { bgcolor: 'transparent', gap: 1 }
+                }}
+                endIcon={<span>→</span>}
+              >
+                Ver Gestão Patrimonial
+              </Button>
             </MotionBox>
           </Grid>
         </Grid>
       </Container>
 
       {/* Features Section */}
-      <Box sx={{ bgcolor: '#f9f9f9', py: 15 }}>
+      <Box sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.02), py: 15 }}>
         <Container maxWidth="lg">
-          <Grid container spacing={8} alignItems="center">
+          <Grid container spacing={10} alignItems="center">
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography variant="h3" sx={{ fontWeight: 800, mb: 3 }}>
-                Tecnologia que <span style={{ color: theme.palette.secondary.main }}>Pensa</span>
+              <Typography variant="h2" sx={{ fontWeight: 800, mb: 4, letterSpacing: '-0.02em' }}>
+                Tecnologia que <span style={{ color: theme.palette.secondary.main }}>Potencializa</span>
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.1rem' }}>
-                Não somos apenas contabilidade. Somos uma plataforma de economia que utiliza IA para identificar padrões de gastos e oportunidades de redução de custos automáticas.
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 6, fontSize: '1.2rem', lineHeight: 1.8 }}>
+                Nossa plataforma não é apenas um repositório de documentos. É uma central de inteligência que analisa seus dados em tempo real.
               </Typography>
-              <Stack spacing={3}>
+              <Stack spacing={4}>
                 {[
-                  { title: 'Automação Fiscal', desc: 'Integração direta com prefeituras e receita federal.' },
-                  { title: 'Relatórios Real-time', desc: 'Sua saúde financeira atualizada a cada segundo.' },
-                  { title: 'Suporte Premium', desc: 'Especialistas prontos para guiar suas decisões mais críticas.' }
+                  { title: 'IA Preditiva', desc: 'Antecipamos fluxos de caixa e sugerimos ajustes antes dos problemas acontecerem.', icon: <AutomationIcon color="secondary" /> },
+                  { title: 'Segurança Bancária', desc: 'Dados criptografados com o mesmo padrão utilizado pelas maiores instituições financeiras.', icon: <SecurityIcon color="secondary" /> },
+                  { title: 'Dashboard Executivo', desc: 'Acompanhe todos os seus indicadores através de uma interface limpa e intuitiva.', icon: <DocIcon color="secondary" /> }
                 ].map((feature, i) => (
-                  <Box key={i} sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ width: 8, height: 8, bgcolor: 'secondary.main', borderRadius: '50%', mt: 1.2 }} />
+                  <Box key={i} sx={{ display: 'flex', gap: 3 }}>
+                    <Box 
+                      sx={{ 
+                        width: 48, 
+                        height: 48, 
+                        borderRadius: 2, 
+                        bgcolor: 'white', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                        flexShrink: 0
+                      }}
+                    >
+                      {feature.icon}
+                    </Box>
                     <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 700 }}>{feature.title}</Typography>
-                      <Typography variant="body2" color="text.secondary">{feature.desc}</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>{feature.title}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>{feature.desc}</Typography>
                     </Box>
                   </Box>
                 ))}
@@ -247,48 +410,60 @@ export default function Home() {
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
               <Box sx={{ position: 'relative' }}>
-                <Paper 
-                  elevation={0}
+                <MotionBox
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1 }}
                   sx={{ 
                     p: 4, 
-                    borderRadius: 4, 
+                    borderRadius: 6, 
                     bgcolor: 'white', 
-                    border: '1px solid #eee',
+                    boxShadow: '0 40px 100px rgba(0,0,0,0.1)',
                     position: 'relative',
-                    zIndex: 2
+                    zIndex: 2,
+                    border: '1px solid #f0f0f0'
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>Fluxo de Caixa</Typography>
-                    <AutomationIcon color="secondary" />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 6, alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 800 }}>Fluxo de Caixa Consolidado</Typography>
+                      <Typography variant="caption" color="text.secondary">Últimos 7 meses de performance</Typography>
+                    </Box>
+                    <Box sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1), px: 2, py: 1, borderRadius: 2 }}>
+                      <Typography variant="body2" sx={{ color: 'secondary.main', fontWeight: 800 }}>+24.5% este mês</Typography>
+                    </Box>
                   </Box>
-                  <Box sx={{ height: 200, display: 'flex', alignItems: 'flex-end', gap: 2, px: 2 }}>
-                    {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
-                      <MotionBox
-                        key={i}
-                        initial={{ height: 0 }}
-                        whileInView={{ height: `${h}%` }}
-                        transition={{ duration: 1, delay: i * 0.1 }}
-                        sx={{ 
-                          flex: 1, 
-                          bgcolor: i === 6 ? 'secondary.main' : 'primary.main',
-                          borderRadius: '4px 4px 0 0'
-                        }}
-                      />
+                  <Box sx={{ height: 300, display: 'flex', alignItems: 'flex-end', gap: 2.5, px: 2 }}>
+                    {[40, 65, 50, 85, 60, 95, 100].map((h, i) => (
+                      <Box key={i} sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+                        <MotionBox
+                          initial={{ height: 0 }}
+                          whileInView={{ height: `${h}%` }}
+                          transition={{ duration: 1.2, delay: i * 0.1, ease: "easeOut" }}
+                          sx={{ 
+                            width: '100%',
+                            bgcolor: i === 6 ? 'secondary.main' : 'primary.main',
+                            borderRadius: '8px 8px 4px 4px',
+                            boxShadow: i === 6 ? '0 10px 20px rgba(212, 175, 55, 0.3)' : 'none'
+                          }}
+                        />
+                        <Typography variant="caption" sx={{ fontWeight: 700, opacity: 0.4 }}>{['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'][i]}</Typography>
+                      </Box>
                     ))}
                   </Box>
-                </Paper>
+                </MotionBox>
+                {/* Background shadow element */}
                 <Box 
                   sx={{ 
                     position: 'absolute', 
-                    bottom: -20, 
-                    right: -20, 
+                    top: 40, 
+                    right: -30, 
                     width: '100%', 
                     height: '100%', 
-                    bgcolor: 'secondary.main', 
-                    borderRadius: 4, 
+                    bgcolor: 'primary.main', 
+                    borderRadius: 6, 
                     zIndex: 1,
-                    opacity: 0.1
+                    opacity: 0.05
                   }} 
                 />
               </Box>
@@ -297,42 +472,94 @@ export default function Home() {
         </Container>
       </Box>
 
+      {/* Testimonials (New Section) */}
+      <Box sx={{ py: 15, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ fontWeight: 800, textAlign: 'center', mb: 10, letterSpacing: '-0.02em' }}>
+            O que dizem nossos <span style={{ color: theme.palette.secondary.main }}>parceiros</span>
+          </Typography>
+          <Grid container spacing={4}>
+            {[
+              { name: 'Ricardo Silva', role: 'CEO, TechFlow', content: 'A +Contábil mudou nossa percepção sobre contabilidade. Hoje temos dados reais para tomar decisões rápidas.' },
+              { name: 'Ana Oliveira', role: 'Diretora Financeira, Innova', content: 'A economia tributária que conseguimos no primeiro ano pagou todo o investimento na plataforma por 5 anos.' },
+              { name: 'Marcos Santos', role: 'Empreendedor Solo', content: 'Finalmente um serviço que entende as dores do pequeno empresário com a agilidade do mundo digital.' }
+            ].map((testi, i) => (
+              <Grid key={i} size={{ xs: 12, md: 4 }}>
+                <Paper sx={{ p: 5, borderRadius: 4, bgcolor: '#fcfcfc', border: '1px solid #f0f0f0', height: '100%' }}>
+                  <Typography variant="h2" sx={{ color: 'secondary.main', opacity: 0.3, mb: -2 }}>"</Typography>
+                  <Typography variant="body1" sx={{ mb: 4, fontStyle: 'italic', color: 'text.secondary', lineHeight: 1.7 }}>
+                    {testi.content}
+                  </Typography>
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 800 }}>{testi.name}</Typography>
+                    <Typography variant="body2" color="secondary.main" sx={{ fontWeight: 700 }}>{testi.role}</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
       {/* CTA Section */}
-      <Container maxWidth="md" sx={{ py: 15, textAlign: 'center' }}>
+      <Container maxWidth="lg" sx={{ py: 15 }}>
         <MotionBox
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           sx={{ 
-            p: { xs: 4, md: 8 }, 
+            p: { xs: 6, md: 12 }, 
             bgcolor: 'primary.main', 
             color: 'white', 
-            borderRadius: 6,
+            borderRadius: 10,
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            textAlign: 'center'
           }}
         >
-          <Typography variant="h3" sx={{ fontWeight: 800, mb: 3 }}>
-            Pronto para transformar seus números?
+          {/* Decorative circles */}
+          <Box sx={{ position: 'absolute', top: -50, left: -50, width: 200, height: 200, bgcolor: 'secondary.main', borderRadius: '50%', opacity: 0.1 }} />
+          <Box sx={{ position: 'absolute', bottom: -100, right: -50, width: 300, height: 300, bgcolor: 'secondary.main', borderRadius: '50%', opacity: 0.1 }} />
+
+          <Typography variant="h2" sx={{ fontWeight: 800, mb: 4, position: 'relative', zIndex: 1, letterSpacing: '-0.02em' }}>
+            Sua jornada para o sucesso financeiro começa aqui.
           </Typography>
-          <Typography variant="h6" sx={{ mb: 5, opacity: 0.8 }}>
-            Junte-se a centenas de empresas que já economizaram mais de R$ 2M em impostos e taxas este ano.
+          <Typography variant="h5" sx={{ mb: 6, opacity: 0.8, maxWidth: 700, mx: 'auto', fontWeight: 400, position: 'relative', zIndex: 1 }}>
+            Agende uma conversa com nossos especialistas e descubra como podemos otimizar seus resultados.
           </Typography>
-          <Button 
-            variant="contained" 
-            size="large"
-            sx={{ 
-              bgcolor: 'secondary.main', 
-              color: 'primary.main', 
-              fontWeight: 700,
-              px: 6,
-              py: 2,
-              fontSize: '1.1rem',
-              '&:hover': { bgcolor: '#B8962F' }
-            }}
-          >
-            Agendar Demonstração Gratuita
-          </Button>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ position: 'relative', zIndex: 1 }}>
+            <Button 
+              variant="contained" 
+              size="large"
+              sx={{ 
+                bgcolor: 'secondary.main', 
+                color: 'primary.main', 
+                fontWeight: 800,
+                px: 6,
+                py: 2.5,
+                fontSize: '1.2rem',
+                '&:hover': { bgcolor: '#B8962F', transform: 'scale(1.05)' },
+                transition: 'all 0.3s'
+              }}
+            >
+              Agendar Demonstração
+            </Button>
+            <Button 
+              variant="outlined" 
+              size="large"
+              sx={{ 
+                color: 'white', 
+                borderColor: 'white',
+                fontWeight: 700,
+                px: 6,
+                py: 2.5,
+                fontSize: '1.2rem',
+                '&:hover': { bgcolor: alpha('#fff', 0.1), borderColor: 'white' }
+              }}
+            >
+              Ver Planos
+            </Button>
+          </Stack>
         </MotionBox>
       </Container>
     </Box>
