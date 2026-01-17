@@ -5,6 +5,7 @@ export interface User {
   role: string;
   sector: 'Administrativo' | 'Contábil' | 'Suporte' | 'Copywrite/Design' | 'Cliente';
   companyId?: string;
+  companyName?: string;
   plan?: 'Essencial' | 'Pro' | 'Premium';
   cpf_cnpj?: string;
 }

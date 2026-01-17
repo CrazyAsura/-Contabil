@@ -41,8 +41,7 @@ import {
   Brush as DesignIcon
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { usersService } from '@/lib/users.service';
-import { User } from '@/types/auth';
+import { usersService, User } from '@/lib/users.service';
 import { useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useAppSelector } from '@/store/hooks';
@@ -61,15 +60,15 @@ export default function EmployeesPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const { user: currentUser } = useAppSelector((state) => state.auth);
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: usersService.findAll,
+    queryFn: () => usersService.findAll(),
   });
 
   // Filter users that belong to the same company and are not 'Cliente'
   const employees = useMemo(() => {
-    if (!users) return [];
-    return users.filter((u: any) => u.companyId === currentUser?.companyId && u.sector !== 'Cliente');
+    if (!users || !Array.isArray(users)) return [];
+    return users.filter((u: User) => u.companyId === currentUser?.companyId && u.sector !== 'Cliente');
   }, [users, currentUser]);
 
   const stats = useMemo(() => {
@@ -134,7 +133,7 @@ export default function EmployeesPage() {
 
   const onSubmit = (data: any) => {
     if (editingUser) {
-      updateMutation.mutate({ id: editingUser.id, data });
+      updateMutation.mutate({ id: editingUser._id, data });
     } else {
       createMutation.mutate({ ...data, companyId: currentUser?.companyId });
     }

@@ -21,7 +21,7 @@ import {
   ChevronLeft as BackIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,7 +41,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const theme = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+
+  const redirect = searchParams.get('redirect');
 
   const {
     register,
@@ -55,7 +58,20 @@ export default function LoginPage() {
     mutationFn: authService.login,
     onSuccess: (data) => {
       dispatch(setCredentials(data));
-      router.push('/dashboard');
+      
+      if (redirect) {
+        // Construct the full redirect URL with all search params
+        const params = new URLSearchParams();
+        searchParams.forEach((value, key) => {
+          if (key !== 'redirect') {
+            params.append(key, value);
+          }
+        });
+        const queryString = params.toString();
+        router.push(`${redirect}${queryString ? `?${queryString}` : ''}`);
+      } else {
+        router.push('/dashboard');
+      }
     },
   });
 

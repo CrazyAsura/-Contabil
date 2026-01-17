@@ -23,4 +23,9 @@ export const paymentsService = {
     const response = await api.get(`/payments/company/${companyId}`);
     return response.data;
   },
+
+  async processPayment(paymentData: any) {
+    const response = await api.post('/payments/process-payment', paymentData);
+    return response.data;
+  },
 };

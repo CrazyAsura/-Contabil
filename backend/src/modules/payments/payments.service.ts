@@ -1,22 +1,61 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Payment } from './schema/payments.schema';
+import { Payment as PaymentSchema } from './schema/payments.schema';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { ConfigService } from '@nestjs/config';
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 
 @Injectable()
 export class PaymentsService {
   private mpClient: MercadoPagoConfig;
 
   constructor(
-    @InjectModel(Payment.name) private paymentModel: Model<Payment>,
+    @InjectModel(PaymentSchema.name) private paymentModel: Model<PaymentSchema>,
     private configService: ConfigService,
   ) {
     this.mpClient = new MercadoPagoConfig({
       accessToken: 'APP_USR-8670849718654189-011320-57a0012f047b703da033fa42992bf172-2557709656',
     });
+  }
+
+  async processPayment(paymentData: any) {
+    const payment = new Payment(this.mpClient);
+
+    try {
+      const response = await payment.create({
+        body: {
+          transaction_amount: paymentData.transaction_amount,
+          token: paymentData.token,
+          description: paymentData.description,
+          installments: paymentData.installments,
+          payment_method_id: paymentData.payment_method_id,
+          issuer_id: paymentData.issuer_id,
+          payer: {
+            email: paymentData.payer.email,
+            identification: {
+              type: paymentData.payer.identification.type,
+              number: paymentData.payer.identification.number,
+            },
+          },
+        },
+      });
+
+      // Save payment record
+      const newPayment = new this.paymentModel({
+        companyId: paymentData.companyId,
+        amount: paymentData.transaction_amount,
+        description: paymentData.description,
+        status: response.status === 'approved' ? 'PAID' : 'PENDING',
+        paymentId: response.id?.toString(),
+      });
+      await newPayment.save();
+
+      return response;
+    } catch (error) {
+      console.error('Mercado Pago Payment Error:', error);
+      throw new BadRequestException('Erro ao processar pagamento');
+    }
   }
 
   async createPreference(createPaymentDto: CreatePaymentDto) {
@@ -71,7 +110,7 @@ export class PaymentsService {
     return { received: true };
   }
 
-  async findAllByCompany(companyId: string): Promise<Payment[]> {
+  async findAllByCompany(companyId: string): Promise<PaymentSchema[]> {
     return this.paymentModel.find({ companyId }).exec();
   }
 }

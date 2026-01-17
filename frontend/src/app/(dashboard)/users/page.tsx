@@ -43,20 +43,20 @@ export default function UsersPage() {
   const [open, setOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  const { data: users, isLoading: isLoadingUsers } = useQuery({
+  const { data: users, isLoading: isLoadingUsers } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: usersService.findAll,
+    queryFn: () => usersService.findAll(),
   });
 
   const { data: companies } = useQuery({
     queryKey: ['companies'],
-    queryFn: companiesService.findAll,
+    queryFn: () => companiesService.findAll(),
   });
 
   const { register, handleSubmit, reset, setValue } = useForm<CreateUserDto>();
 
   const createMutation = useMutation({
-    mutationFn: usersService.create,
+    mutationFn: (data: CreateUserDto) => usersService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       handleClose();
@@ -73,7 +73,7 @@ export default function UsersPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: usersService.remove,
+    mutationFn: (id: string) => usersService.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -108,7 +108,7 @@ export default function UsersPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este usuário?')) {
+    if (window.confirm('Tem certeza que deseja remover este usuário?')) {
       deleteMutation.mutate(id);
     }
   };

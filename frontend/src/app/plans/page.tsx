@@ -90,21 +90,11 @@ export default function PlansPage() {
 
   const handleSubscribe = (plan: any) => {
     if (!isAuthenticated) {
-      router.push('/login?redirect=/plans');
+      router.push(`/login?redirect=/payment&planId=${plan.id}&amount=${plan.price}&description=${encodeURIComponent(plan.name)}`);
       return;
     }
 
-    if (!user?.companyId) {
-      alert('Você precisa estar vinculado a uma empresa para assinar um plano.');
-      return;
-    }
-
-    checkoutMutation.mutate({
-      companyId: user.companyId,
-      documentNumber: `PLAN_${plan.id}_${Date.now()}`,
-      amount: plan.price,
-      description: `Assinatura Plano ${plan.name} - +Contábil`,
-    });
+    router.push(`/payment?planId=${plan.id}&amount=${plan.price}&description=${encodeURIComponent(plan.name)}`);
   };
 
   return (

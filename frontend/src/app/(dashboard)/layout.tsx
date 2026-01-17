@@ -90,6 +90,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { text: 'Notas Fiscais', icon: <InvoicesIcon />, path: '/invoices', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
     { text: 'Despesas', icon: <ExpensesIcon />, path: '/expenses', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
     { text: 'Relatórios', icon: <ReportsIcon />, path: '/reports', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'], minPlan: 'Essencial' },
+    { text: 'Notificações', icon: <NotificationsIcon />, path: '/notifications', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
+    { text: 'Gerenciar Notificações', icon: <NotificationsIcon />, path: '/notifications/manage', roles: ['SUPER_ADMIN', 'EMPLOYEE'] },
   ];
 
   const filteredMenuItems = menuItems.filter(item => {

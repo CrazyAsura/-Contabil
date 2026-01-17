@@ -13,6 +13,12 @@ export class PaymentsController {
     return this.paymentsService.createPreference(createPaymentDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('process-payment')
+  processPayment(@Body() paymentData: any) {
+    return this.paymentsService.processPayment(paymentData);
+  }
+
   @Post('webhook')
   webhook(@Body() data: any) {
     return this.paymentsService.handleWebhook(data);
