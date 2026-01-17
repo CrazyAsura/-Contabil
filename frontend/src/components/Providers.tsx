@@ -15,6 +15,7 @@ import { queryClient } from '@/lib/react-query';
 import { getTheme } from '@/theme/theme';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { usePathname } from 'next/navigation';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -23,18 +24,28 @@ interface ProvidersProps {
 function ThemeApp({ children }: { children: ReactNode }) {
   const themeMode = useAppSelector((state) => state.ui.themeMode);
   const theme = useMemo(() => getTheme(themeMode), [themeMode]);
+  const pathname = usePathname();
+  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isDashboard = pathname.startsWith('/dashboard') || 
+                      pathname.startsWith('/companies') || 
+                      pathname.startsWith('/users') ||
+                      pathname.startsWith('/invoices') ||
+                      pathname.startsWith('/expenses') ||
+                      pathname.startsWith('/reports');
+
+  const hideNavFooter = isAuthPage || isDashboard;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Navbar />
+        {!hideNavFooter && <Navbar />}
         <AnimatePresence mode="wait">
           <Box component="main" sx={{ flexGrow: 1 }}>
             {children}
           </Box>
         </AnimatePresence>
-        <Footer />
+        {!hideNavFooter && <Footer />}
       </Box>
     </ThemeProvider>
   );

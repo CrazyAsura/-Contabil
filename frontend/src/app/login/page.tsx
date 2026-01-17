@@ -11,7 +11,9 @@ import {
   Link as MuiLink,
   useTheme,
   alpha,
-  Divider
+  Divider,
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { 
   Login as LoginIcon, 
@@ -19,10 +21,47 @@ import {
   ChevronLeft as BackIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import { authService } from '@/lib/auth.service';
+import { useAppDispatch } from '@/store/hooks';
+import { setCredentials } from '@/store/slices/authSlice';
+
+const loginSchema = z.object({
+  email: z.string().email('E-mail inválido'),
+  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const theme = useTheme();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      dispatch(setCredentials(data));
+      router.push('/dashboard');
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data);
+  };
 
   return (
     <Box 
@@ -92,9 +131,32 @@ export default function LoginPage() {
               </Typography>
             </Box>
 
-            <Stack spacing={3}>
-              <TextField fullWidth label="E-mail" variant="outlined" placeholder="seu@email.com" />
-              <TextField fullWidth label="Senha" type="password" variant="outlined" />
+            <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
+              {loginMutation.isError && (
+                <Alert severity="error">
+                  { (loginMutation.error as any)?.response?.data?.message || 'Erro ao realizar login. Verifique suas credenciais.' }
+                </Alert>
+              )}
+              <TextField 
+                fullWidth 
+                label="E-mail" 
+                variant="outlined" 
+                placeholder="seu@email.com"
+                {...register('email')}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                disabled={loginMutation.isPending}
+              />
+              <TextField 
+                fullWidth 
+                label="Senha" 
+                type="password" 
+                variant="outlined"
+                {...register('password')}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                disabled={loginMutation.isPending}
+              />
               
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <MuiLink component={Link} href="/reset-password" variant="body2" sx={{ color: 'secondary.main', fontWeight: 600, textDecoration: 'none' }}>
@@ -106,7 +168,9 @@ export default function LoginPage() {
                 fullWidth 
                 variant="contained" 
                 size="large" 
-                startIcon={<LoginIcon />}
+                type="submit"
+                startIcon={loginMutation.isPending ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
+                disabled={loginMutation.isPending}
                 sx={{ 
                   py: 1.8, 
                   fontWeight: 700, 
@@ -115,7 +179,7 @@ export default function LoginPage() {
                   '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.9) }
                 }}
               >
-                Entrar no Sistema
+                {loginMutation.isPending ? 'Entrando...' : 'Entrar no Sistema'}
               </Button>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 1 }}>
