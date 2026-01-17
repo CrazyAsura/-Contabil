@@ -24,7 +24,7 @@ export class CreateUserDto {
   })
   sector: string;
 
-  @IsNotEmpty({ message: 'A empresa é obrigatória' })
+  @IsOptional()
   @IsString()
-  companyId: string;
+  companyId?: string;
 }

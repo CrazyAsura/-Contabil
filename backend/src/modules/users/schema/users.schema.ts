@@ -18,8 +18,8 @@ export class User extends Document{
     @Prop({required: true, enum: ['Administrativo', 'Contábil', 'Suporte', 'Copywrite/Design', 'Cliente'], default: 'Cliente'})
     sector: string;
 
-    @Prop({ type: Types.ObjectId, ref: 'Company' ,required: true})
-    companyId: Types.ObjectId;
+    @Prop({ type: Types.ObjectId, ref: 'Company' ,required: false})
+    companyId?: Types.ObjectId;
 
     @Prop({ type: Types.ObjectId, ref: 'Address' })
     addressId: Types.ObjectId;
