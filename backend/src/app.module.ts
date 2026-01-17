@@ -10,6 +10,8 @@ import { InvoicesModule } from './modules/invoices/invoices.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { AuditLogModule } from './modules/audit-logs/audit-logs.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { AdminModule } from './modules/admin/admin.module';
     ExpensesModule,
     ReportsModule,
     AdminModule,
+    PaymentsModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

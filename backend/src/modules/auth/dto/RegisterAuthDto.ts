@@ -18,5 +18,9 @@ export class RegisterAuthDto {
 
     @IsString()
     @IsNotEmpty()
+    sector: string;
+
+    @IsString()
+    @IsNotEmpty()
     companyId: string;
 }

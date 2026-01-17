@@ -16,15 +16,20 @@ import {
   alpha,
   Chip
 } from '@mui/material';
-import { Check as CheckIcon } from '@mui/icons-material';
+import { Check as CheckIcon, ShoppingCart as CartIcon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { paymentsService } from '@/lib/payments.service';
+import { useAppSelector } from '@/store/hooks';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const MotionCard = motion(Card);
 
 const plans = [
   {
+    id: 'essencial_monthly',
     name: 'Essencial',
-    price: '299',
+    price: 299,
     description: 'Ideal para MEIs e pequenos empreendedores que buscam organização.',
     features: [
       'Contabilidade Digital',
@@ -36,8 +41,9 @@ const plans = [
     recommended: false,
   },
   {
+    id: 'pro_monthly',
     name: 'Pro',
-    price: '599',
+    price: 599,
     description: 'Para empresas em crescimento que precisam de análise consultiva.',
     features: [
       'Tudo do Essencial',
@@ -50,8 +56,9 @@ const plans = [
     recommended: true,
   },
   {
+    id: 'premium_monthly',
     name: 'Premium',
-    price: '1.299',
+    price: 1299,
     description: 'Gestão completa e estratégica para médias empresas.',
     features: [
       'Tudo do Pro',
@@ -67,6 +74,38 @@ const plans = [
 
 export default function PlansPage() {
   const theme = useTheme();
+  const router = useRouter();
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  const checkoutMutation = useMutation({
+    mutationFn: paymentsService.createPreference,
+    onSuccess: (data) => {
+      window.location.href = data.init_point;
+    },
+    onError: (error) => {
+      console.error('Checkout error:', error);
+      alert('Erro ao processar pagamento. Tente novamente.');
+    }
+  });
+
+  const handleSubscribe = (plan: any) => {
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/plans');
+      return;
+    }
+
+    if (!user?.companyId) {
+      alert('Você precisa estar vinculado a uma empresa para assinar um plano.');
+      return;
+    }
+
+    checkoutMutation.mutate({
+      companyId: user.companyId,
+      documentNumber: `PLAN_${plan.id}_${Date.now()}`,
+      amount: plan.price,
+      description: `Assinatura Plano ${plan.name} - +Contábil`,
+    });
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
@@ -141,22 +180,30 @@ export default function PlansPage() {
                   </List>
                   <Button 
                     fullWidth 
-                    variant={plan.recommended ? 'contained' : 'outlined'} 
+                    variant={plan.recommended ? 'contained' : 'outlined'}
                     size="large"
+                    onClick={() => handleSubscribe(plan)}
+                    loading={checkoutMutation.isPending}
                     sx={{ 
-                      borderRadius: 2, 
+                      mt: 4, 
                       py: 1.5,
-                      fontWeight: 700,
+                      borderRadius: 3,
+                      fontWeight: 800,
+                      fontSize: '1rem',
+                      textTransform: 'none',
                       bgcolor: plan.recommended ? 'secondary.main' : 'transparent',
-                      color: plan.recommended ? 'primary.main' : 'primary.main',
+                      color: 'primary.main',
                       borderColor: 'primary.main',
+                      ...(plan.recommended && {
+                        boxShadow: `0 8px 20px -6px ${alpha(theme.palette.primary.main, 0.5)}`,
+                      }),
                       '&:hover': {
                         bgcolor: plan.recommended ? '#B8962F' : alpha(theme.palette.primary.main, 0.05),
                         borderColor: 'primary.main'
                       }
                     }}
                   >
-                    Escolher {plan.name}
+                    {plan.recommended ? 'Assinar Agora' : 'Começar Agora'}
                   </Button>
                 </CardContent>
               </MotionCard>

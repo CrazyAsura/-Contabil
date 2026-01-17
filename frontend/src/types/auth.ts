@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  sector: 'Administrativo' | 'Contábil' | 'Suporte' | 'Copywrite/Design' | 'Cliente';
   companyId?: string;
 }
 
@@ -21,6 +22,7 @@ export interface RegisterAuthDto {
   email: string;
   password: string;
   role: string;
+  sector: string;
   companyId?: string;
   document?: string;
   address?: {
