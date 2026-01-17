@@ -19,16 +19,21 @@ export class ExpensesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.expensesService.findOne(+id);
+    return this.expensesService.findOne(id);
+  }
+
+  @Get('company/:companyId')
+  findByCompany(@Param('companyId') companyId: string) {
+    return this.expensesService.findByCompany(companyId);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
-    return this.expensesService.update(+id, updateExpenseDto);
+    return this.expensesService.update(id, updateExpenseDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.expensesService.remove(+id);
+    return this.expensesService.remove(id);
   }
 }

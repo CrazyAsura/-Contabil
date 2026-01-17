@@ -21,16 +21,49 @@ import {
   Business
 } from '@mui/icons-material';
 import { useAppSelector } from '@/store/hooks';
+import { useQuery } from '@tanstack/react-query';
+import { analyticsService, AnalyticsStats } from '@/lib/analytics.service';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
+import Link from 'next/link';
+import { CircularProgress } from '@mui/material';
 
 export default function DashboardPage() {
   const theme = useTheme();
   const { user } = useAppSelector((state) => state.auth);
+  const companyId = user?.companyId?.toString() || '';
 
-  const stats = [
-    { label: 'Receita Mensal', value: 'R$ 45.200,00', icon: <TrendingUp />, color: theme.palette.success.main, trend: '+12%' },
-    { label: 'Despesas', value: 'R$ 12.840,00', icon: <TrendingDown />, color: theme.palette.error.main, trend: '-5%' },
-    { label: 'Saldo Atual', value: 'R$ 32.360,00', icon: <AccountBalanceWallet />, color: theme.palette.primary.main, trend: '+8%' },
-    { label: 'Notas Emitidas', value: '124', icon: <Receipt />, color: theme.palette.secondary.main, trend: '+15%' },
+  const { data: stats, isLoading, error } = useQuery<AnalyticsStats>({
+    queryKey: ['analytics-dashboard', companyId],
+    queryFn: () => analyticsService.getDashboardStats(companyId),
+    enabled: !!companyId,
+  });
+
+  const formatCurrency = (val: number) => 
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  const kpiStats = [
+    { label: 'Receita Mensal', value: formatCurrency(stats?.kpis.totalRevenue || 0), icon: <TrendingUp />, color: theme.palette.success.main, trend: '+12%' },
+    { label: 'Despesas', value: formatCurrency(stats?.kpis.totalExpenses || 0), icon: <TrendingDown />, color: theme.palette.error.main, trend: '-5%' },
+    { label: 'Saldo Atual', value: formatCurrency(stats?.kpis.netProfit || 0), icon: <AccountBalanceWallet />, color: theme.palette.primary.main, trend: '+8%' },
+    { label: 'Margem de Lucro', value: `${(stats?.kpis.profitMargin || 0).toFixed(1)}%`, icon: <Receipt />, color: theme.palette.secondary.main, trend: '+15%' },
   ];
 
   return (
@@ -45,7 +78,7 @@ export default function DashboardPage() {
       </Box>
 
       <Grid container spacing={3}>
-        {stats.map((stat, index) => (
+        {kpiStats.map((stat, index) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
             <Card 
               elevation={0}
@@ -105,17 +138,32 @@ export default function DashboardPage() {
               minHeight: 400,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
               bgcolor: 'background.paper'
             }}
           >
-            <Typography variant="h6" fontWeight={700} gutterBottom>
-              Fluxo de Caixa (Gráfico)
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>
+              Fluxo de Caixa (Últimos 6 meses)
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Gráfico será implementado aqui.
-            </Typography>
+            <Box sx={{ flexGrow: 1, width: '100%', minHeight: 300 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={stats?.monthlyData.slice(-6) || []}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={alpha(theme.palette.divider, 0.1)} />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} tickFormatter={(val) => `R$ ${val/1000}k`} />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                    formatter={(value: any) => [formatCurrency(Number(value)), 'Receita']}
+                  />
+                  <Area type="monotone" dataKey="revenue" stroke={theme.palette.primary.main} strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Box>
           </Paper>
         </Grid>
 
@@ -140,6 +188,8 @@ export default function DashboardPage() {
                   variant="contained" 
                   color="secondary" 
                   startIcon={<Receipt />}
+                  component={Link}
+                  href="/invoices"
                   sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none', py: 1 }}
                 >
                   Emitir Nova Nota
@@ -147,6 +197,8 @@ export default function DashboardPage() {
                 <Button 
                   fullWidth 
                   variant="outlined" 
+                  component={Link}
+                  href="/expenses"
                   sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none', py: 1, color: 'white', borderColor: alpha('#fff', 0.5) }}
                 >
                   Adicionar Despesa

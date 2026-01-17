@@ -26,18 +26,24 @@ export class ReportsController {
   @Get(':id')
   @Sectors('Contábil')
   findOne(@Param('id') id: string) {
-    return this.reportsService.findOne(+id);
+    return this.reportsService.findOne(id);
+  }
+
+  @Get('company/:companyId')
+  @Sectors('Contábil')
+  findByCompany(@Param('companyId') companyId: string) {
+    return this.reportsService.findByCompany(companyId);
   }
 
   @Patch(':id')
   @Sectors('Contábil')
   update(@Param('id') id: string, @Body() updateReportDto: UpdateReportDto) {
-    return this.reportsService.update(+id, updateReportDto);
+    return this.reportsService.update(id, updateReportDto);
   }
 
   @Delete(':id')
   @Sectors('Contábil')
   remove(@Param('id') id: string) {
-    return this.reportsService.remove(+id);
+    return this.reportsService.remove(id);
   }
 }

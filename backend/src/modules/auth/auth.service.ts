@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { UsersService } from '../users/users.service';
+import { CompaniesService } from '../companies/companies.service';
 import { RegisterAuthDto } from './dto/RegisterAuthDto';
 import { LoginAuthDto } from './dto/LoginAuthDto';
 
@@ -9,6 +10,7 @@ import { LoginAuthDto } from './dto/LoginAuthDto';
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private companiesService: CompaniesService,
     private jwtService: JwtService,
   ) {}
 
@@ -24,6 +26,14 @@ export class AuthService {
       password: hashedPassword,
     });
 
+    let plan = 'Essencial';
+    if (newUser.companyId) {
+      const company = await this.companiesService.findOne(newUser.companyId.toString());
+      if (company) {
+        plan = company.plan;
+      }
+    }
+
     const payload = { sub: newUser._id, email: newUser.email, role: newUser.role };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -34,6 +44,8 @@ export class AuthService {
         role: newUser.role,
         sector: newUser.sector,
         companyId: newUser.companyId,
+        cpf_cnpj: newUser.cpf_cnpj,
+        plan: plan,
       },
     };
   }
@@ -49,6 +61,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    let plan = 'Essencial';
+    if (user.companyId) {
+      const company = await this.companiesService.findOne(user.companyId.toString());
+      if (company) {
+        plan = company.plan;
+      }
+    }
+
     const payload = { sub: user._id, email: user.email, role: user.role };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -59,6 +79,8 @@ export class AuthService {
         role: user.role,
         sector: user.sector,
         companyId: user.companyId,
+        cpf_cnpj: user.cpf_cnpj,
+        plan: plan,
       },
     };
   }

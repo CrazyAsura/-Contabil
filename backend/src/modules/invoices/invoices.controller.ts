@@ -19,16 +19,21 @@ export class InvoicesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.invoicesService.findOne(+id);
+    return this.invoicesService.findOne(id);
+  }
+
+  @Get('company/:companyId')
+  findByCompany(@Param('companyId') companyId: string) {
+    return this.invoicesService.findByCompany(companyId);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
-    return this.invoicesService.update(+id, updateInvoiceDto);
+    return this.invoicesService.update(id, updateInvoiceDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.invoicesService.remove(+id);
+    return this.invoicesService.remove(id);
   }
 }

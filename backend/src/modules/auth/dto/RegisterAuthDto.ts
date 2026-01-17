@@ -21,6 +21,10 @@ export class RegisterAuthDto {
     sector: string;
 
     @IsString()
+    @IsNotEmpty()
+    cpf_cnpj: string;
+
+    @IsString()
     @IsOptional()
     companyId?: string;
 }

@@ -82,14 +82,57 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Analytics IA', icon: <PsychologyIcon />, path: '/analytics' },
-    { text: 'Empresas', icon: <BusinessIcon />, path: '/companies' },
-    { text: 'Usuários', icon: <PeopleIcon />, path: '/users' },
-    { text: 'Notas Fiscais', icon: <InvoicesIcon />, path: '/invoices' },
-    { text: 'Despesas', icon: <ExpensesIcon />, path: '/expenses' },
-    { text: 'Relatórios', icon: <ReportsIcon />, path: '/reports' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
+    { text: 'Analytics IA', icon: <PsychologyIcon />, path: '/analytics', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'], minPlan: 'Pro' },
+    { text: 'Empresas', icon: <BusinessIcon />, path: '/companies', roles: ['SUPER_ADMIN'] },
+    { text: 'Usuários', icon: <PeopleIcon />, path: '/users', roles: ['SUPER_ADMIN', 'EMPLOYEE'] },
+    { text: 'Funcionários', icon: <PeopleIcon />, path: '/employees', roles: ['USER'] }, // Employees of the company
+    { text: 'Notas Fiscais', icon: <InvoicesIcon />, path: '/invoices', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
+    { text: 'Despesas', icon: <ExpensesIcon />, path: '/expenses', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'] },
+    { text: 'Relatórios', icon: <ReportsIcon />, path: '/reports', roles: ['SUPER_ADMIN', 'EMPLOYEE', 'USER'], minPlan: 'Essencial' },
   ];
+
+  const filteredMenuItems = menuItems.filter(item => {
+    // Check role
+    const hasRole = item.roles.includes(user?.role || '');
+    
+    // If it's a USER, also check plan
+    if (hasRole && user?.role === 'USER' && item.minPlan) {
+      const planOrder = ['Essencial', 'Pro', 'Premium'];
+      const userPlanIndex = planOrder.indexOf(user?.plan || 'Essencial');
+      const itemPlanIndex = planOrder.indexOf(item.minPlan);
+      return userPlanIndex >= itemPlanIndex;
+    }
+    
+    return hasRole;
+  });
+
+  const canUpgrade = user?.role === 'USER' && user?.plan !== 'Premium';
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    // Check if current path is allowed
+    const currentMenuItem = menuItems.find(item => item.path === pathname);
+    if (currentMenuItem) {
+      const hasRole = currentMenuItem.roles.includes(user?.role || '');
+      let hasPlan = true;
+      
+      if (user?.role === 'USER' && currentMenuItem.minPlan) {
+        const planOrder = ['Essencial', 'Pro', 'Premium'];
+        const userPlanIndex = planOrder.indexOf(user?.plan || 'Essencial');
+        const itemPlanIndex = planOrder.indexOf(currentMenuItem.minPlan);
+        hasPlan = userPlanIndex >= itemPlanIndex;
+      }
+
+      if (!hasRole || !hasPlan) {
+        router.push('/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, pathname, router]);
 
   if (!isAuthenticated) return null;
 
@@ -138,7 +181,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <NotificationsIcon />
             </IconButton>
             <Tooltip title="Configurações">
-              <IconButton color="inherit">
+              <IconButton color="inherit" component={Link} href="/settings">
                 <SettingsIcon />
               </IconButton>
             </Tooltip>
@@ -248,7 +291,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </Box>
         <Divider />
         <List sx={{ px: 2, py: 2 }}>
-          {menuItems.map((item) => {
+          {filteredMenuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
@@ -283,28 +326,55 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </List>
         <Box sx={{ mt: 'auto', p: 2 }}>
-          <Box sx={{ 
-            p: 2, 
-            bgcolor: alpha(theme.palette.secondary.main, 0.05), 
-            borderRadius: 3,
-            border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`
-          }}>
-            <Typography variant="subtitle2" fontWeight={700} color="secondary.main">
-              Suporte Premium
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
-              Precisa de ajuda com sua contabilidade?
-            </Typography>
-            <Button 
-              fullWidth 
-              size="small" 
-              variant="contained" 
-              color="secondary"
-              sx={{ borderRadius: 1.5, fontWeight: 700, textTransform: 'none' }}
-            >
-              Falar com Especialista
-            </Button>
-          </Box>
+          {canUpgrade ? (
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: alpha(theme.palette.secondary.main, 0.05), 
+              borderRadius: 3,
+              border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`
+            }}>
+              <Typography variant="subtitle2" fontWeight={700} color="secondary.main">
+                Melhorar Plano
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+                Seu plano atual é {user?.plan}. Explore novos recursos!
+              </Typography>
+              <Button 
+                fullWidth 
+                size="small" 
+                variant="contained" 
+                color="secondary"
+                component={Link}
+                href="/plans"
+                sx={{ borderRadius: 1.5, fontWeight: 700, textTransform: 'none' }}
+              >
+                Ver Planos
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: alpha(theme.palette.primary.main, 0.05), 
+              borderRadius: 3,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
+            }}>
+              <Typography variant="subtitle2" fontWeight={700} color="primary.main">
+                Suporte Especializado
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+                Precisa de ajuda? Fale com nossa equipe agora.
+              </Typography>
+              <Button 
+                fullWidth 
+                size="small" 
+                variant="contained" 
+                color="primary"
+                sx={{ borderRadius: 1.5, fontWeight: 700, textTransform: 'none' }}
+              >
+                Falar com Especialista
+              </Button>
+            </Box>
+          )}
         </Box>
       </Drawer>
 

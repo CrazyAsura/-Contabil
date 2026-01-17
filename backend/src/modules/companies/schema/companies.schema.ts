@@ -14,6 +14,12 @@ export class Company extends Document {
 
     @Prop({default: true})
     isActive: boolean;
+
+    @Prop({ required: true, enum: ['Essencial', 'Pro', 'Premium'], default: 'Essencial' })
+    plan: string;
+
+    @Prop({ required: true, unique: true })
+    cnpj: string;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

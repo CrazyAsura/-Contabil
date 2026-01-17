@@ -24,6 +24,10 @@ export class CreateUserDto {
   })
   sector: string;
 
+  @IsNotEmpty({ message: 'O CPF/CNPJ é obrigatório' })
+  @IsString()
+  cpf_cnpj: string;
+
   @IsOptional()
   @IsString()
   companyId?: string;
