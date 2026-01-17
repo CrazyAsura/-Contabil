@@ -199,6 +199,9 @@ export default function CompaniesPage() {
             {editingCompany ? 'Editar Empresa' : 'Nova Empresa'}
           </DialogTitle>
           <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {editingCompany ? 'Atualize as informações da empresa abaixo.' : 'Preencha os dados para cadastrar uma nova empresa.'}
+            </Typography>
             <Stack spacing={3} sx={{ mt: 1 }}>
               <TextField
                 fullWidth

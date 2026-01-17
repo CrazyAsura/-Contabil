@@ -74,7 +74,7 @@ export default function Home() {
         />
 
         <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
+          <Grid container spacing={6} sx={{ alignItems: 'center' }}>
             <Grid size={{ xs: 12, md: 7 }}>
               <MotionBox
                 initial={{ opacity: 0, x: -50 }}

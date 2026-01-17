@@ -38,6 +38,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IMaskInput } from 'react-imask';
 import axios from 'axios';
+import { authService } from '@/lib/auth.service';
+import { useRouter } from 'next/navigation';
 
 // --- Mask Components (Keep outside to avoid recreation) ---
 
@@ -78,7 +80,7 @@ CEPMask.displayName = 'CEPMask';
 const PhoneMask = React.forwardRef<HTMLInputElement, any>((props, ref) => (
   <IMaskInput
     {...props}
-    mask="(00) 00000-0000"
+    mask="00000-0000"
     inputRef={ref}
     onAccept={(value: any) => props.onChange({ target: { name: props.name, value } })}
     overwrite
@@ -332,9 +334,15 @@ Step3.displayName = 'Step3';
 
 export default function RegisterPage() {
   const theme = useTheme();
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [personType, setPersonType] = useState('PF');
   const [showPassword, setShowPassword] = useState(false);
+  
+  // API State
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -422,13 +430,75 @@ export default function RegisterPage() {
 
   // --- Handlers ---
 
-  const handleNext = useCallback(() => setActiveStep((prev) => prev + 1), []);
-  const handleBack = useCallback(() => setActiveStep((prev) => prev - 1), []);
+  const handleNext = useCallback(() => {
+    if (activeStep === 0) {
+      if (!formData.name || !formData.email || !formData.password || !formData.document) {
+        setError('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError('As senhas não coincidem.');
+        return;
+      }
+    }
+    setError(null);
+    setActiveStep((prev) => prev + 1);
+  }, [activeStep, formData]);
+
+  const handleBack = useCallback(() => {
+    setError(null);
+    setActiveStep((prev) => prev - 1);
+  }, []);
 
   const handleChange = useCallback((e: any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  }, []);
+    if (error) setError(null);
+  }, [error]);
+
+  const handleRegister = async () => {
+    if (!formData.ddd || !formData.phone) {
+      setError('Por favor, preencha as informações de contato.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const registerData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: 'Cliente',
+        sector: 'Cliente',
+        document: formData.document.replace(/\D/g, ''),
+        address: {
+          zipCode: formData.cep.replace(/\D/g, ''),
+          street: formData.street,
+          number: formData.number,
+          neighborhood: formData.neighborhood,
+          city: formData.city,
+          state: formData.state,
+        },
+        phone: {
+          ddi: formData.ddi,
+          ddd: formData.ddd.replace(/\D/g, ''),
+          number: formData.phone.replace(/\D/g, ''),
+        }
+      };
+
+      await authService.register(registerData);
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setError(err.response?.data?.message || 'Erro ao realizar cadastro. Verifique os dados e tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const currentStepContent = useMemo(() => {
     switch (activeStep) {
@@ -520,6 +590,32 @@ export default function RegisterPage() {
               ))}
             </Stepper>
 
+            {error && (
+              <Box 
+                component={motion.div} 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                sx={{ mb: 3 }}
+              >
+                <Alert severity="error" onClose={() => setError(null)} sx={{ borderRadius: 2 }}>
+                  {error}
+                </Alert>
+              </Box>
+            )}
+
+            {success && (
+              <Box 
+                component={motion.div} 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                sx={{ mb: 3 }}
+              >
+                <Alert severity="success" sx={{ borderRadius: 2 }}>
+                  Cadastro realizado com sucesso! Redirecionando para o login...
+                </Alert>
+              </Box>
+            )}
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeStep}
@@ -538,6 +634,7 @@ export default function RegisterPage() {
                   fullWidth 
                   variant="outlined" 
                   onClick={handleBack}
+                  disabled={loading || success}
                   startIcon={<BackIcon />}
                   sx={{ py: 1.5, borderRadius: 2, borderColor: alpha(theme.palette.primary.main, 0.2), color: 'text.primary' }}
                 >
@@ -547,8 +644,9 @@ export default function RegisterPage() {
               <Button 
                 fullWidth 
                 variant="contained" 
-                onClick={activeStep === steps.length - 1 ? () => console.log('Finalize', formData) : handleNext}
-                endIcon={activeStep === steps.length - 1 ? <SuccessIcon /> : <NextIcon />}
+                onClick={activeStep === steps.length - 1 ? handleRegister : handleNext}
+                disabled={loading || success}
+                endIcon={loading ? <CircularProgress size={20} color="inherit" /> : (activeStep === steps.length - 1 ? <SuccessIcon /> : <NextIcon />)}
                 sx={{ 
                   py: 1.5, 
                   borderRadius: 2, 
@@ -558,7 +656,7 @@ export default function RegisterPage() {
                   '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.9) }
                 }}
               >
-                {activeStep === steps.length - 1 ? 'Concluir Cadastro' : 'Próximo Passo'}
+                {loading ? 'Processando...' : (activeStep === steps.length - 1 ? 'Concluir Cadastro' : 'Próximo Passo')}
               </Button>
             </Stack>
 

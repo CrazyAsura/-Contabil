@@ -215,6 +215,9 @@ export default function UsersPage() {
             {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
           </DialogTitle>
           <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {editingUser ? 'Atualize as informações do usuário abaixo.' : 'Preencha os dados para cadastrar um novo usuário.'}
+            </Typography>
             <Stack spacing={3} sx={{ mt: 1 }}>
               <TextField
                 fullWidth

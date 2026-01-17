@@ -34,7 +34,8 @@ import {
   Assessment as ReportsIcon,
   Logout as LogoutIcon,
   Settings as SettingsIcon,
-  Notifications as NotificationsIcon
+  Notifications as NotificationsIcon,
+  Psychology as PsychologyIcon
 } from '@mui/icons-material';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -82,6 +83,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Analytics IA', icon: <PsychologyIcon />, path: '/analytics' },
     { text: 'Empresas', icon: <BusinessIcon />, path: '/companies' },
     { text: 'Usuários', icon: <PeopleIcon />, path: '/users' },
     { text: 'Notas Fiscais', icon: <InvoicesIcon />, path: '/invoices' },

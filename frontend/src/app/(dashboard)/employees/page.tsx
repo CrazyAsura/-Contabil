@@ -288,6 +288,9 @@ export default function EmployeesPage() {
             {editingUser ? 'Editar Funcionário' : 'Novo Funcionário'}
           </DialogTitle>
           <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {editingUser ? 'Atualize as informações do funcionário abaixo.' : 'Preencha os dados para cadastrar um novo funcionário.'}
+            </Typography>
             <Stack spacing={3} sx={{ mt: 1 }}>
               <Controller
                 name="name"
