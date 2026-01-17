@@ -81,7 +81,8 @@ export default function EmployeesPage() {
     return { total, bySector };
   }, [employees]);
 
-  const { control, handleSubmit, reset, setValue } = useForm<Partial<User>>();
+  type EmployeeFormValues = Partial<User> & { password?: string };
+  const { control, handleSubmit, reset, setValue } = useForm<EmployeeFormValues>();
 
   const createMutation = useMutation({
     mutationFn: usersService.create,
