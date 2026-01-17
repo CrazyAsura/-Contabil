@@ -6,6 +6,7 @@ import { Company, CompanySchema } from '../companies/schema/companies.schema';
 import { User, UserSchema } from '../users/schema/users.schema';
 import { Revenue, RevenueSchema } from '../revenue/schema/revenue.schema';
 import { Expense, ExpenseSchema } from '../expenses/schema/expenses.schema';
+import { AuditLogModule } from '../audit-logs/audit-logs.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Expense, ExpenseSchema } from '../expenses/schema/expenses.schema';
       { name: Revenue.name, schema: RevenueSchema },
       { name: Expense.name, schema: ExpenseSchema },
     ]),
+    AuditLogModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],
